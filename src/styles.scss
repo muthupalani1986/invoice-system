@@ -1,0 +1,18 @@
+// Import Fuse core library
+@import "@fuse/scss/core";
+
+// Import app.theme.scss
+@import "app/app.theme";
+//Notification css
+body.theme-default{
+.mat-snack-bar-container{
+    &.error{
+        background:#f44336;
+        color:#fff;
+    }
+    &.success{
+        background:#4eb569;
+        color:#fff;
+    }
+}
+}

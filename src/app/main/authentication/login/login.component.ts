@@ -11,6 +11,8 @@ import { SNACK_BAR_MSGS } from '../../../constants/notification.constants';
 import { SessionService } from '../../../services/session.service';
 import { SESSION_STORAGE } from '../../../constants/session.constants';
 import * as _ from 'lodash';
+import * as moment from 'moment'; 
+import { FuseProgressBarService } from '@fuse/components/progress-bar/progress-bar.service';
 @Component({
     selector: 'login',
     templateUrl: './login.component.html',
@@ -33,7 +35,8 @@ export class LoginComponent implements OnInit {
         private _router: Router,
         private _userService: UserService,
         private _notificationService: NotificationService,
-        private _sessionService:SessionService
+        private _sessionService:SessionService,
+        private _fuseProgressBarService: FuseProgressBarService
     ) {
         // Configure the layout
         this._fuseConfigService.config = {
@@ -62,6 +65,7 @@ export class LoginComponent implements OnInit {
      * On init
      */
     ngOnInit(): void {
+
         this.loginForm = this._formBuilder.group({
             email: ['', [Validators.required, Validators.email]],
             password: ['', Validators.required]
@@ -72,16 +76,18 @@ export class LoginComponent implements OnInit {
             email_id: this.email.value,
             password: this.password.value
         }
+        this._fuseProgressBarService.show();
         this._userService.login(requestPaylod).subscribe((data:LoginResponse) => {
-            console.log("Test", data);
+            this._fuseProgressBarService.hide();
             const statusCode=_.get(data,'statusCode');
             if(statusCode==='0000'){
                 this._sessionService.setItem(SESSION_STORAGE.currentUser,data);
-                this._router.navigate(['/apps/dashboards/analytics'])
+                this._router.navigate(['/admin']);
             }else{
               this._notificationService.show(data.msg, "error");  
             }
         }, (err) => {
+            this._fuseProgressBarService.hide();
             this._notificationService.show(SNACK_BAR_MSGS.genericError, "error");
         });
     }

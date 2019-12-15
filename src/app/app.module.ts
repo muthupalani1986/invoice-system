@@ -21,13 +21,17 @@ import { SampleModule } from 'app/main/sample/sample.module';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 const appRoutes: Routes = [
+    {                                                                       
+        path        : 'auth', 
+         loadChildren: () => import('./main/authentication/auth.module').then(mod => mod.AuthModule)
+    },
     {
-        path        : 'auth',
-        loadChildren: './main/authentication/auth.module#AuthModule'
+        path        : 'admin',        
+        loadChildren: () => import('./main/admin/admin.module').then(mod => mod.AdminModule)
     },
     {
         path      : '**',
-        redirectTo: 'sample'
+        redirectTo: 'auth'
     }
 ];
 
@@ -39,7 +43,7 @@ const appRoutes: Routes = [
         BrowserModule,
         BrowserAnimationsModule,
         HttpClientModule,
-        RouterModule.forRoot(appRoutes),
+        RouterModule.forRoot(appRoutes,{useHash: true}),
 
         TranslateModule.forRoot(),
 

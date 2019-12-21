@@ -41,7 +41,7 @@ export const navigation: FuseNavigation[] = [
                         id   : 'add-product',
                         title: 'Add product',
                         type : 'item',
-                        url  : '/product/add'
+                        url  : '/product/new'
                     }
                 ]
                 },
@@ -101,25 +101,25 @@ export const navigation: FuseNavigation[] = [
                         id   : 'user-list',
                         title: 'User list',
                         type : 'item',
-                        url  : '/profile/user-list'
+                        url  : '/people/user-list'
                     },
                     {
                         id   : 'add-user',
                         title: 'Add User',
                         type : 'item',
-                        url  : '/profile/add-user'
+                        url  : '/people/add-user'
                     },
                     {
                         id   : 'customer-list',
                         title: 'Customer list',
                         type : 'item',
-                        url  : '/profile/customer-list'
+                        url  : '/people/customer-list'
                     },
                     {
                         id   : 'add-customer',
                         title: 'Add Customer',
                         type : 'item',
-                        url  : '/profile/add-customer'
+                        url  : '/people/add-customer'
                     }
                 ]
                 }]

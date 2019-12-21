@@ -21,16 +21,36 @@ import { SampleModule } from 'app/main/sample/sample.module';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 const appRoutes: Routes = [
-    {                                                                       
-        path        : 'auth', 
-         loadChildren: () => import('./main/authentication/auth.module').then(mod => mod.AuthModule)
+    {
+        path: 'auth',
+        loadChildren: () => import('./main/authentication/auth.module').then(mod => mod.AuthModule)
     },
     {
-        path        : 'admin',        
-        loadChildren: () => import('./main/admin/admin.module').then(mod => mod.AdminModule)
+        path: 'dashboard',
+        loadChildren: () => import('./main/dashboard/dashboard.module').then(mod => mod.DashboardModule)
     },
     {
-        path      : '**',
+        path: 'product',
+        loadChildren: () => import('./main/product/product.module').then(mod => mod.ProductModule)
+    },
+    {
+        path: 'quotation',
+        loadChildren: () => import('./main/quotation/quotation.module').then(mod => mod.QuotationModule)
+    },
+    {
+        path: 'sales',
+        loadChildren: () => import('./main/sales/sales.module').then(mod => mod.SalesModule)
+    },
+    {
+        path: 'people',
+        loadChildren: () => import('./main/people/people.module').then(mod => mod.PeopleModule)
+    },
+    {
+        path: 'settings',
+        loadChildren: () => import('./main/settings/settings.module').then(mod => mod.SettingsModule)
+    },
+    {
+        path: '**',
         redirectTo: 'auth'
     }
 ];
@@ -39,11 +59,11 @@ const appRoutes: Routes = [
     declarations: [
         AppComponent
     ],
-    imports     : [
+    imports: [
         BrowserModule,
         BrowserAnimationsModule,
         HttpClientModule,
-        RouterModule.forRoot(appRoutes,{useHash: true}),
+        RouterModule.forRoot(appRoutes, { useHash: true }),
 
         TranslateModule.forRoot(),
 
@@ -66,10 +86,9 @@ const appRoutes: Routes = [
         SampleModule,
         MatSnackBarModule
     ],
-    bootstrap   : [
+    bootstrap: [
         AppComponent
     ]
 })
-export class AppModule
-{
+export class AppModule {
 }

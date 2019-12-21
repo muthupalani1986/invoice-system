@@ -82,7 +82,7 @@ export class LoginComponent implements OnInit {
             const statusCode=_.get(data,'statusCode');
             if(statusCode==='0000'){
                 this._sessionService.setItem(SESSION_STORAGE.currentUser,data);
-                this._router.navigate(['/admin']);
+                this._router.navigate(['/dashboard']);
             }else{
               this._notificationService.show(data.msg, "error");  
             }

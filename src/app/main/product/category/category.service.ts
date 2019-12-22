@@ -4,11 +4,11 @@ import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/r
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable()
-export class EcommerceProductService implements Resolve<any>
+export class CategoryService implements Resolve<any>
 {
     routeParams: any;
-    product: any;
-    onProductChanged: BehaviorSubject<any>;
+    category: any;
+    onCategoryChanged: BehaviorSubject<any>;
 
     /**
      * Constructor
@@ -20,7 +20,7 @@ export class EcommerceProductService implements Resolve<any>
     )
     {
         // Set the defaults
-        this.onProductChanged = new BehaviorSubject({});
+        this.onCategoryChanged = new BehaviorSubject({});
     }
 
     /**
@@ -37,7 +37,7 @@ export class EcommerceProductService implements Resolve<any>
         return new Promise((resolve, reject) => {
 
             Promise.all([
-                this.getProduct()
+                this.getCategory()
             ]).then(
                 () => {
                     resolve();
@@ -52,20 +52,20 @@ export class EcommerceProductService implements Resolve<any>
      *
      * @returns {Promise<any>}
      */
-    getProduct(): Promise<any>
+    getCategory(): Promise<any>
     {
         return new Promise((resolve, reject) => {
             
             if ( this.routeParams.id === 'new' )
             {
-                this.onProductChanged.next(false);
+                this.onCategoryChanged.next(false);
                 resolve(false);
             }
             else
             {
-                this.product={"id":"1","image":"test","name":"Test","category":"test cat","priceTaxIncl":"10","quantity":5,"active":true}
-                this.onProductChanged.next(this.product);
-                        resolve(this.product);
+                this.category={"id":"1","name":"Test"}
+                this.onCategoryChanged.next(this.category);
+                        resolve(this.category);
                 /*this._httpClient.get('api/e-commerce-products/' + this.routeParams.id)
                     .subscribe((response: any) => {
                         this.product = response;
@@ -77,15 +77,15 @@ export class EcommerceProductService implements Resolve<any>
     }
 
     /**
-     * Save product
+     * Save category
      *
      * @param product
      * @returns {Promise<any>}
      */
-    saveProduct(product): Promise<any>
+    saveCategory(category): Promise<any>
     {
         return new Promise((resolve, reject) => {
-            this._httpClient.post('api/e-commerce-products/' + product.id, product)
+            this._httpClient.post('api/e-commerce-products/' + category.id, category)
                 .subscribe((response: any) => {
                     resolve(response);
                 }, reject);
@@ -93,15 +93,15 @@ export class EcommerceProductService implements Resolve<any>
     }
 
     /**
-     * Add product
+     * Add category
      *
-     * @param product
+     * @param category
      * @returns {Promise<any>}
      */
-    addProduct(product): Promise<any>
+    addProduct(category): Promise<any>
     {
         return new Promise((resolve, reject) => {
-            this._httpClient.post('api/e-commerce-products/', product)
+            this._httpClient.post('api/e-commerce-products/', category)
                 .subscribe((response: any) => {
                     resolve(response);
                 }, reject);

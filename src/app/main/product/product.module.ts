@@ -24,10 +24,33 @@ import { FuseSharedModule } from '@fuse/shared.module';
 import { FuseWidgetModule } from '@fuse/components/widget/widget.module';
 import { EcommerceProductsService } from 'app/main/product/products.service';
 import { EcommerceProductService } from 'app/main/product/add-product/product.service';
+import { CategoryService } from 'app/main/product/category/category.service';
+import { CategoriesService } from 'app/main/product/categories.service';
+import { AddCategoryComponent } from './add-category/add-category.component';
+import { SharedModule } from '../../shared/shared.module';
+
+
 const routes = [
   {
-    path: 'category',
-    component: CategoryComponent
+    path: 'category/list',
+    component: CategoryComponent,
+    resolve: {
+      data: CategoriesService
+    }
+  },
+  {
+    path: 'category/:id',
+    component: AddCategoryComponent,
+    resolve: {
+      data: CategoryService
+    }
+  },
+  {
+    path: 'category/:id/:handle',
+    component: AddCategoryComponent,
+    resolve: {
+      data: CategoryService
+    }
   },
   {
     path: 'list',
@@ -35,7 +58,7 @@ const routes = [
     resolve: {
       data: EcommerceProductsService
     }
-  },  
+  },
   {
     path: ':id',
     component: AddProductComponent,
@@ -57,35 +80,23 @@ const routes = [
 ];
 
 @NgModule({
-  declarations: [CategoryComponent, ProductListComponent, AddProductComponent],
+  declarations: [CategoryComponent, ProductListComponent, AddProductComponent, AddCategoryComponent],
   imports: [
     RouterModule.forChild(routes),
-    CommonModule,
-    MatButtonModule,
-    MatChipsModule,
-    MatExpansionModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatPaginatorModule,
-    MatRippleModule,
-    MatSelectModule,
-    MatSortModule,
-    MatSnackBarModule,
-    MatTableModule,
-    MatTabsModule,
-
+    SharedModule,
     NgxChartsModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyD81ecsCj4yYpcXSLFcYU97PvRsE_X8Bx8'
     }),
 
     FuseSharedModule,
-    FuseWidgetModule
+    FuseWidgetModule,
   ],
   providers: [
     EcommerceProductsService,
-    EcommerceProductService
+    EcommerceProductService,
+    CategoryService,
+    CategoriesService
   ]
 })
 export class ProductModule { }

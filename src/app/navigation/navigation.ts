@@ -29,7 +29,7 @@ export const navigation: FuseNavigation[] = [
                         id   : 'category',
                         title: 'Category',
                         type : 'item',
-                        url  : '/product/category'
+                        url  : '/product/category/list'
                     },
                     {
                         id   : 'product-list',

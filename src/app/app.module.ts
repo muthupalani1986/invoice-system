@@ -19,6 +19,8 @@ import { AppComponent } from 'app/app.component';
 import { LayoutModule } from 'app/layout/layout.module';
 import { SampleModule } from 'app/main/sample/sample.module';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { SharedModule } from './shared/shared.module';
+import { DeleteConfirmationDialogComponent } from 'app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 const appRoutes: Routes = [
     {
@@ -84,11 +86,13 @@ const appRoutes: Routes = [
         // App modules
         LayoutModule,
         SampleModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        SharedModule
     ],
     bootstrap: [
         AppComponent
-    ]
+    ],
+    entryComponents:[DeleteConfirmationDialogComponent]
 })
 export class AppModule {
 }

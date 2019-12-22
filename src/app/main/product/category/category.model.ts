@@ -5,17 +5,17 @@ import { FuseUtils } from '@fuse/utils';
 export class Category
 {
     id: string;
-    name: string;
+    category_name: string;
 
     /**
      * Constructor
      *
      * @param category
      */
-    constructor(product?)
+    constructor(category?)
     {
-        product = product || {};
-        this.id = product.id || FuseUtils.generateGUID();
-        this.name = product.name || '';
+        category = category || {};
+        this.id = category.id || FuseUtils.generateGUID();
+        this.category_name = category.category_name || '';
     }
 }

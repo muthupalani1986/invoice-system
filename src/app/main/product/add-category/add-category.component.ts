@@ -10,8 +10,9 @@ import { FuseUtils } from '@fuse/utils';
 
 import { Product } from 'app/main/product/add-product/product.model';
 import { EcommerceProductService } from 'app/main/product/add-product/product.service';
-import { CategoryService } from 'app/main/product/category/category.service';
 import { Category } from '../category/category.model';
+import { CategoryRequestPayload } from '../../../interfaces/category.interface';
+import { CategoryService } from '../category/category.service';
 
 
 @Component({
@@ -97,25 +98,28 @@ export class AddCategoryComponent implements OnInit, OnDestroy {
   createProductForm(): FormGroup {
     return this._formBuilder.group({
       id: [this.category.id],
-      name: [this.category.name]
+      name: [this.category.category_name]
     });
   }
 
   /**
    * Save product
    */
-  saveProduct(): void {
+  saveCategory(): void {
     const data = this.productForm.getRawValue();
-    data.handle = FuseUtils.handleize(data.name);
-
-    this._categoryService.saveCategory(data)
-      .then(() => {
+    data.category_name = FuseUtils.handleize(data.name);
+    const requestPayload: CategoryRequestPayload = {
+      id: data.id,
+      category_name: data.category_name
+    }
+    this._categoryService.saveCategory(requestPayload)
+      .then((response) => {
 
         // Trigger the subscription with new data
         this._categoryService.onCategoryChanged.next(data);
 
         // Show the success message
-        this._matSnackBar.open('Product saved', 'OK', {
+        this._matSnackBar.open(response.message, 'OK', {
           verticalPosition: 'top',
           duration: 2000
         });
@@ -125,24 +129,28 @@ export class AddCategoryComponent implements OnInit, OnDestroy {
   /**
    * Add product
    */
-  addProduct(): void {
+  addCategory(): void {
     const data = this.productForm.getRawValue();
-    data.handle = FuseUtils.handleize(data.name);
-
-    this._categoryService.addProduct(data)
-      .then(() => {
-
+    data.category_name = FuseUtils.handleize(data.name);
+    const requestPayload: CategoryRequestPayload = {
+      category_name: data.category_name
+    }
+    this._categoryService.addCategory(requestPayload)
+      .then((response) => {
+        console.log("response", response);
         // Trigger the subscription with new data
+        data.id = response.id;
+        this.productForm.patchValue({ id: response.id });
         this._categoryService.onCategoryChanged.next(data);
 
         // Show the success message
-        this._matSnackBar.open('Product added', 'OK', {
+        this._matSnackBar.open(response.message, 'OK', {
           verticalPosition: 'top',
           duration: 2000
         });
 
         // Change the location with new one
-        this._location.go('product/category/' + this.category.id + '/' + this.category.name);
+        this._location.go('product/category/' + this.category.id + '/' + this.category.category_name);
       });
   }
 }

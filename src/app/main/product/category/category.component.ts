@@ -72,7 +72,7 @@ export class CategoryComponent implements OnInit {
       });
   }
   public editCategory(category: any) {
-    this._router.navigate(['/product/category/' + category.id + '/' + category.name])
+    this._router.navigate(['/product/category/' + category.id + '/' + category.category_name])
   }
   public deleteCategory(category: any) {    
     this.openDialog();
@@ -201,7 +201,7 @@ export class FilesDataSource extends DataSource<any>
         case 'id':
           [propertyA, propertyB] = [a.id, b.id];
           break;
-        case 'name':
+        case 'category_name':
           [propertyA, propertyB] = [a.name, b.name];
           break;
       }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { LoginResponse, LoginRequestPayload } from '../interfaces/user.interface';
 import { Observable } from 'rxjs';
+import { environment } from 'environments/environment';
 const httpOptions = {
   headers: new HttpHeaders({
     'Content-Type':  'application/json',
@@ -12,7 +13,7 @@ const httpOptions = {
   providedIn: 'root'
 })
 export class UserService {
-  private apiBaseUrl='http://localhost:6001';
+  private apiBaseUrl=environment.apiBaseUrl;
   constructor(private http:HttpClient) { }
   public login(payLodData:LoginRequestPayload):Observable<LoginResponse>{
     const url=this.apiBaseUrl+'/user/login';

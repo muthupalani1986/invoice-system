@@ -22,6 +22,10 @@ export class HttpCategoryService {
     const url = this.apiBaseUrl + '/category/update';
     return this._http.post<NewCategoryResponse>(url, { ...payLodData }, this.requestheader());
   }
+  public deleteCategory(payLodData: CategoryRequestPayload): Observable<NewCategoryResponse> {
+    const url = this.apiBaseUrl + '/category/delete';
+    return this._http.post<NewCategoryResponse>(url, { ...payLodData }, this.requestheader());
+  }
   public getAllCategories(): Observable<CategoryResponse> {
     const url = this.apiBaseUrl + '/category';
     return this._http.post<CategoryResponse>(url, {}, this.requestheader());

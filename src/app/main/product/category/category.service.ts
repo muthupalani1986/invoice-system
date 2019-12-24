@@ -85,7 +85,7 @@ export class CategoryService implements Resolve<any>
     /**
      * Save category
      *
-     * @param product
+     * @param category
      * @returns {Promise<any>}
      */
     saveCategory(category): Promise<any> {
@@ -118,6 +118,26 @@ export class CategoryService implements Resolve<any>
                     reject();
                 }
             }, reject)
+        });
+    }
+
+    /**
+     * Delete category
+     *
+     * @param category
+     * @returns {Promise<any>}
+     */
+    deleteCategory(category): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this._httpCategoryService.deleteCategory(category).subscribe((response: any) => {
+                const statusCode=_.get(response,'statusCode','404');
+                if(statusCode==='0000'){
+                    resolve(response);
+                }else{
+                    reject();
+                }                
+            }, reject)
+            
         });
     }
 }

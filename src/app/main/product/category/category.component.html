@@ -44,14 +44,7 @@
 
             <mat-table class="products-table" #table [dataSource]="dataSource" matSort [@animateStagger]="{value:'50'}" fusePerfectScrollbar>
 
-                <!-- ID Column -->
-                <ng-container matColumnDef="id">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
-                    <mat-cell *matCellDef="let category">
-                        <p class="text-truncate">{{category.id}}</p>
-                    </mat-cell>
-                </ng-container>
-
+                
                 <!-- Name Column -->
                 <ng-container matColumnDef="name">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
@@ -59,9 +52,9 @@
                         <p class="text-truncate">{{category.category_name}}</p>
                     </mat-cell>
                 </ng-container>
-                <!-- Name Column -->
+                <!-- Actions Column -->
                 <ng-container matColumnDef="actions">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Actions</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
                     <mat-cell *matCellDef="let category">
                         <mat-icon (click)="editCategory(category)">edit</mat-icon> <mat-icon (click)="deleteCategory(category)">delete</mat-icon>
                     </mat-cell>

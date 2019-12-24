@@ -14,7 +14,7 @@ export interface CategoryDetails{
 }
 export interface CategoryRequestPayload{
     id?:number;
-    category_name:string;    
+    category_name?:string;    
 }
 export interface NewCategoryResponse{
     statusCode?:string;

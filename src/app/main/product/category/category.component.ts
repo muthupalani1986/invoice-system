@@ -16,6 +16,9 @@ import { DeleteConfirmationDialogComponent } from '../../../shared/components/de
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Category } from './category.model';
 import * as _ from 'lodash';
+import { CategoryService } from './category.service';
+import { NotificationService } from '../../../services/notification.service';
+import { SNACK_BAR_MSGS } from '../../../constants/notification.constants';
 
 @Component({
   selector: 'app-category',
@@ -26,7 +29,7 @@ import * as _ from 'lodash';
 })
 export class CategoryComponent implements OnInit {
   dataSource: FilesDataSource | null;
-  displayedColumns = ['id', 'name', 'actions'];
+  displayedColumns = ['name', 'actions'];
 
   @ViewChild(MatPaginator, { static: true })
   paginator: MatPaginator;
@@ -43,7 +46,9 @@ export class CategoryComponent implements OnInit {
   constructor(
     private _categoriesService: CategoriesService,
     private _router: Router,
-    public _dialog: MatDialog
+    public _dialog: MatDialog,
+    private _categoryService: CategoryService,
+    private _notificationService: NotificationService
   ) {
     // Set the private defaults
     this._unsubscribeAll = new Subject();
@@ -78,16 +83,27 @@ export class CategoryComponent implements OnInit {
     this._router.navigate(['/product/category/' + category.id + '/' + category.handle])
   }
   public deleteCategory(category: any) {
-    this.openDialog();
+    this.openDialog(category);
   }
-  openDialog(): void {
+  openDialog(category): void {
+    const requestPayload = {
+      id: category.id
+    }
     const dialogRef = this._dialog.open(DeleteConfirmationDialogComponent, {
       width: '250px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result === 'ok') {
-        this.dataSource = new FilesDataSource(this._categoriesService, this.paginator, this.sort);
+        this._categoryService.deleteCategory(requestPayload).then((respose) => {
+          this._notificationService.show(respose.message, 'success');
+          let index: number = this._categoriesService.categories.findIndex(item => item.id === requestPayload.id);
+          this._categoriesService.categories.splice(index, 1);
+          this.dataSource = new FilesDataSource(this._categoriesService, this.paginator, this.sort);
+        }, (err) => {
+          this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
+        });
+
       }
     });
   }
@@ -201,9 +217,6 @@ export class FilesDataSource extends DataSource<any>
       let propertyB: number | string = '';
 
       switch (this._matSort.active) {
-        case 'id':
-          [propertyA, propertyB] = [a.id, b.id];
-          break;
         case 'category_name':
           [propertyA, propertyB] = [a.name, b.name];
           break;

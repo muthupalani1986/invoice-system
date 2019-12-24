@@ -11,8 +11,9 @@ export class NotificationService {
   ) { }
   public show(message: string, type: string) {
     const className = type === 'error' ? 'error' : 'success';
-    this._snackBar.open(message, '', {
+    this._snackBar.open(message, 'OK', {
       panelClass: className,
+      verticalPosition: 'top',
       duration: 2000,
     });
   }

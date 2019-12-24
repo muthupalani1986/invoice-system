@@ -6,13 +6,16 @@
 //Notification css
 body.theme-default{
 .mat-snack-bar-container{
+    .mat-simple-snackbar-action{
+        color:#333333;
+    }
     &.error{
         background:#f44336;
-        color:#fff;
+        color:#ffffff;
     }
     &.success{
         background:#4eb569;
-        color:#fff;
+        color:#ffffff;
     }
 }
 }

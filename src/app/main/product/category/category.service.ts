@@ -3,13 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpCategoryService } from '../../../services/http-category.service';
+import { GetCategoryResponse, CategoryDetails } from '../../../interfaces/category.interface';
+import { FuseUtils } from '@fuse/utils';
+import * as _ from 'lodash';
 
 
 @Injectable()
 export class CategoryService implements Resolve<any>
 {
     routeParams: any;
-    category: any;
+    category: CategoryDetails;
     onCategoryChanged: BehaviorSubject<any>;
 
     /**
@@ -19,7 +22,7 @@ export class CategoryService implements Resolve<any>
      */
     constructor(
         private _httpClient: HttpClient,
-        private _httpCategoryService: HttpCategoryService,
+        private _httpCategoryService: HttpCategoryService
     ) {
         // Set the defaults
         this.onCategoryChanged = new BehaviorSubject({});
@@ -61,15 +64,20 @@ export class CategoryService implements Resolve<any>
                 resolve(false);
             }
             else {
-                this.category = { "id": "1", "category_name": "Test" }
-                this.onCategoryChanged.next(this.category);
-                resolve(this.category);
-                /*this._httpClient.get('api/e-commerce-products/' + this.routeParams.id)
-                    .subscribe((response: any) => {
-                        this.product = response;
-                        this.onProductChanged.next(this.product);
+                this._httpCategoryService.getCategory(this.routeParams.id).subscribe((response: GetCategoryResponse) => {
+                    const categoryResponse = { ...response };
+                    const statusCode = _.get(categoryResponse, 'statusCode');
+                    if (statusCode === '0000') {
+                        this.category = _.get(categoryResponse, 'category');
+                        this.category.handle = FuseUtils.handleize(this.category.category_name);
+                        this.onCategoryChanged.next(this.category);
                         resolve(response);
-                    }, reject);*/
+                    } else {
+                        this.onCategoryChanged.next({});
+                        resolve();
+                    }
+
+                }, reject)
             }
         });
     }
@@ -83,13 +91,14 @@ export class CategoryService implements Resolve<any>
     saveCategory(category): Promise<any> {
         return new Promise((resolve, reject) => {
             this._httpCategoryService.saveCategory(category).subscribe((response: any) => {
-                resolve(response);
-            }, reject)
-            /*
-            this._httpClient.post('api/e-commerce-products/' + category.id, category)
-                .subscribe((response: any) => {
+                const statusCode=_.get(response,'statusCode','404');
+                if(statusCode==='0000'){
                     resolve(response);
-                }, reject);*/
+                }else{
+                    reject();
+                }                
+            }, reject)
+            
         });
     }
 
@@ -102,13 +111,13 @@ export class CategoryService implements Resolve<any>
     addCategory(category): Promise<any> {
         return new Promise((resolve, reject) => {
             this._httpCategoryService.addCategory(category).subscribe((response: any) => {
-                resolve(response);
-            }, reject)
-            /*
-            this._httpClient.post('api/e-commerce-products/', category)
-                .subscribe((response: any) => {
+                const statusCode=_.get(response,'statusCode','404');
+                if(statusCode==='0000'){
                     resolve(response);
-                }, reject);*/
+                }else{
+                    reject();
+                }
+            }, reject)
         });
     }
 }

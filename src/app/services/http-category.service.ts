@@ -3,7 +3,7 @@ import { environment } from 'environments/environment';
 import { SESSION_STORAGE } from '../constants/session.constants';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SessionService } from './session.service';
-import { CategoryRequestPayload, CategoryResponse, NewCategoryResponse } from '../interfaces/category.interface';
+import { CategoryRequestPayload, CategoryResponse, NewCategoryResponse, GetCategoryResponse } from '../interfaces/category.interface';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -25,6 +25,10 @@ export class HttpCategoryService {
   public getAllCategories(): Observable<CategoryResponse> {
     const url = this.apiBaseUrl + '/category';
     return this._http.post<CategoryResponse>(url, {}, this.requestheader());
+  }
+  public getCategory(category_id:number): Observable<GetCategoryResponse> {
+    const url = this.apiBaseUrl + '/category/'+category_id;
+    return this._http.post<GetCategoryResponse>(url, {}, this.requestheader());
   }
   private requestheader() {
     const tokenId = this.userDetails.token;

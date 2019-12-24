@@ -14,6 +14,8 @@ import { CategoriesService } from '../categories.service';
 import { Router } from '@angular/router';
 import { DeleteConfirmationDialogComponent } from '../../../shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Category } from './category.model';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-category',
@@ -71,10 +73,11 @@ export class CategoryComponent implements OnInit {
         this.dataSource.filter = this.filter.nativeElement.value;
       });
   }
-  public editCategory(category: any) {
-    this._router.navigate(['/product/category/' + category.id + '/' + category.category_name])
+  public editCategory(category: Category) {
+    category.handle = FuseUtils.handleize(category.category_name);
+    this._router.navigate(['/product/category/' + category.id + '/' + category.handle])
   }
-  public deleteCategory(category: any) {    
+  public deleteCategory(category: any) {
     this.openDialog();
   }
   openDialog(): void {

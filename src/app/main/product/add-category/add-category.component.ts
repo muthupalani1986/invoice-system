@@ -13,6 +13,9 @@ import { EcommerceProductService } from 'app/main/product/add-product/product.se
 import { Category } from '../category/category.model';
 import { CategoryRequestPayload } from '../../../interfaces/category.interface';
 import { CategoryService } from '../category/category.service';
+import * as _ from 'lodash';
+import { NotificationService } from '../../../services/notification.service';
+import { SNACK_BAR_MSGS } from '../../../constants/notification.constants';
 
 
 @Component({
@@ -25,7 +28,7 @@ import { CategoryService } from '../category/category.service';
 export class AddCategoryComponent implements OnInit, OnDestroy {
   category: Category;
   pageType: string;
-  productForm: FormGroup;
+  categoryForm: FormGroup;
 
   // Private
   private _unsubscribeAll: Subject<any>;
@@ -42,7 +45,8 @@ export class AddCategoryComponent implements OnInit, OnDestroy {
     private _categoryService: CategoryService,
     private _formBuilder: FormBuilder,
     private _location: Location,
-    private _matSnackBar: MatSnackBar
+    private _matSnackBar: MatSnackBar,
+    private _notificationService:NotificationService
   ) {
     // Set the default
     this.category = new Category();
@@ -62,9 +66,12 @@ export class AddCategoryComponent implements OnInit, OnDestroy {
     // Subscribe to update product on changes
     this._categoryService.onCategoryChanged
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe(category => {
-
+      .subscribe(category => {        
         if (category) {
+          const isValidData=_.get(category,'category_name','404'); 
+          if(isValidData==='404'){
+            this._notificationService.show(SNACK_BAR_MSGS.genericError,'error');
+          }         
           this.category = new Category(category);
           this.pageType = 'edit';
         }
@@ -73,7 +80,7 @@ export class AddCategoryComponent implements OnInit, OnDestroy {
           this.category = new Category();
         }
 
-        this.productForm = this.createProductForm();
+        this.categoryForm = this.createCategoryForm();
       });
   }
 
@@ -95,7 +102,7 @@ export class AddCategoryComponent implements OnInit, OnDestroy {
    *
    * @returns {FormGroup}
    */
-  createProductForm(): FormGroup {
+  createCategoryForm(): FormGroup {
     return this._formBuilder.group({
       id: [this.category.id],
       name: [this.category.category_name]
@@ -106,23 +113,21 @@ export class AddCategoryComponent implements OnInit, OnDestroy {
    * Save product
    */
   saveCategory(): void {
-    const data = this.productForm.getRawValue();
-    data.category_name = FuseUtils.handleize(data.name);
+    const data = this.categoryForm.getRawValue();
+    data.category_name = data.name;
+    data.handle=FuseUtils.handleize(data.name);
     const requestPayload: CategoryRequestPayload = {
       id: data.id,
       category_name: data.category_name
     }
     this._categoryService.saveCategory(requestPayload)
       .then((response) => {
-
         // Trigger the subscription with new data
         this._categoryService.onCategoryChanged.next(data);
-
-        // Show the success message
-        this._matSnackBar.open(response.message, 'OK', {
-          verticalPosition: 'top',
-          duration: 2000
-        });
+        this._notificationService.show(response.message,'success');
+        
+      },(err)=>{
+        this._notificationService.show(SNACK_BAR_MSGS.genericError,'error');
       });
   }
 
@@ -130,27 +135,23 @@ export class AddCategoryComponent implements OnInit, OnDestroy {
    * Add product
    */
   addCategory(): void {
-    const data = this.productForm.getRawValue();
-    data.category_name = FuseUtils.handleize(data.name);
+    const data = this.categoryForm.getRawValue();
+    data.category_name = data.name;
+    data.handle=FuseUtils.handleize(data.name);
     const requestPayload: CategoryRequestPayload = {
       category_name: data.category_name
     }
     this._categoryService.addCategory(requestPayload)
-      .then((response) => {
-        console.log("response", response);
+      .then((response) => {        
         // Trigger the subscription with new data
         data.id = response.id;
-        this.productForm.patchValue({ id: response.id });
+        this.categoryForm.patchValue({ id: response.id });
         this._categoryService.onCategoryChanged.next(data);
-
-        // Show the success message
-        this._matSnackBar.open(response.message, 'OK', {
-          verticalPosition: 'top',
-          duration: 2000
-        });
-
+        this._notificationService.show(response.message,'success');
         // Change the location with new one
-        this._location.go('product/category/' + this.category.id + '/' + this.category.category_name);
+        this._location.go('product/category/' + this.category.id + '/' + this.category.handle);
+      },(err)=>{
+        this._notificationService.show(SNACK_BAR_MSGS.genericError,'error');
       });
   }
 }

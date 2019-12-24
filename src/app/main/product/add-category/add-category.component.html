@@ -31,11 +31,11 @@
             </div>
             <!-- / APP TITLE -->
 
-            <button mat-raised-button class="save-product-button" [disabled]="productForm.invalid" *ngIf="pageType ==='new'" (click)="addCategory()">
+            <button mat-raised-button class="save-product-button" [disabled]="categoryForm.invalid" *ngIf="pageType ==='new'" (click)="addCategory()">
                 <span>ADD</span>
             </button>
 
-            <button mat-raised-button class="save-product-button" [disabled]="productForm.invalid || productForm.pristine" *ngIf="pageType ==='edit'"
+            <button mat-raised-button class="save-product-button" [disabled]="categoryForm.invalid || categoryForm.pristine" *ngIf="pageType ==='edit'"
                 (click)="saveCategory()">
                 <span>SAVE</span>
             </button>
@@ -48,7 +48,7 @@
             <!-- CONTENT -->
             <div class="content">
 
-                <form name="productForm" [formGroup]="productForm" class="product w-100-p" fxLayout="column" fxFlex>
+                <form name="categoryForm" [formGroup]="categoryForm" class="product w-100-p" fxLayout="column" fxFlex>
 
                     <mat-tab-group>
 
@@ -58,7 +58,7 @@
 
                                 <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
                                     <mat-label>Category Name</mat-label>
-                                    <input matInput placeholder="Product Name" name="name" formControlName="name" required>
+                                    <input matInput placeholder="Category Name" name="name" formControlName="name" required>
                                 </mat-form-field>
 
                             </div>

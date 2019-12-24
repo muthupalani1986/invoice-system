@@ -1,15 +1,20 @@
 export interface CategoryResponse{
     categories:CategoryDetails[]
 }
+export interface GetCategoryResponse{
+    statusCode?:string;
+    category:CategoryDetails
+}
 export interface CategoryDetails{
     id:number;
     category_name:string;
     created_at:string;
-    updated_at:string
+    updated_at:string;
+    handle?:string;
 }
 export interface CategoryRequestPayload{
     id?:number;
-    category_name:string;
+    category_name:string;    
 }
 export interface NewCategoryResponse{
     statusCode?:string;

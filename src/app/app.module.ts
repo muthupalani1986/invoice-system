@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule, Routes } from '@angular/router';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
@@ -21,6 +21,7 @@ import { SampleModule } from 'app/main/sample/sample.module';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SharedModule } from './shared/shared.module';
 import { DeleteConfirmationDialogComponent } from 'app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
+import { InvoiceHttpInterceptor } from './shared/invoice.http.interceptor';
 
 const appRoutes: Routes = [
     {
@@ -92,7 +93,12 @@ const appRoutes: Routes = [
     bootstrap: [
         AppComponent
     ],
-    entryComponents:[DeleteConfirmationDialogComponent]
+    entryComponents:[DeleteConfirmationDialogComponent],
+    providers:[{
+        provide: HTTP_INTERCEPTORS,
+        useClass: InvoiceHttpInterceptor,
+        multi: true,
+      }]
 })
 export class AppModule {
 }

@@ -12,7 +12,7 @@ import { SessionService } from '../../../services/session.service';
 import { SESSION_STORAGE } from '../../../constants/session.constants';
 import * as _ from 'lodash';
 import * as moment from 'moment'; 
-import { FuseProgressBarService } from '@fuse/components/progress-bar/progress-bar.service';
+
 @Component({
     selector: 'login',
     templateUrl: './login.component.html',
@@ -35,8 +35,7 @@ export class LoginComponent implements OnInit {
         private _router: Router,
         private _userService: UserService,
         private _notificationService: NotificationService,
-        private _sessionService:SessionService,
-        private _fuseProgressBarService: FuseProgressBarService
+        private _sessionService:SessionService
     ) {
         // Configure the layout
         this._fuseConfigService.config = {
@@ -76,9 +75,8 @@ export class LoginComponent implements OnInit {
             email_id: this.email.value,
             password: this.password.value
         }
-        this._fuseProgressBarService.show();
+        
         this._userService.login(requestPaylod).subscribe((data:LoginResponse) => {
-            this._fuseProgressBarService.hide();
             const statusCode=_.get(data,'statusCode');
             if(statusCode==='0000'){
                 this._sessionService.setItem(SESSION_STORAGE.currentUser,data);
@@ -86,8 +84,7 @@ export class LoginComponent implements OnInit {
             }else{
               this._notificationService.show(data.msg, "error");  
             }
-        }, (err) => {
-            this._fuseProgressBarService.hide();
+        }, (err) => {            
             this._notificationService.show(SNACK_BAR_MSGS.genericError, "error");
         });
     }

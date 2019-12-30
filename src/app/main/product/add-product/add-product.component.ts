@@ -10,7 +10,10 @@ import { FuseUtils } from '@fuse/utils';
 
 import { Product } from 'app/main/product/add-product/product.model';
 import { EcommerceProductService } from 'app/main/product/add-product/product.service';
-
+import { HttpCategoryService } from '../../../services/http-category.service';
+import * as _ from 'lodash';
+import { NotificationService } from '../../../services/notification.service';
+import { SNACK_BAR_MSGS } from '../../../constants/notification.constants';
 @Component({
     selector     : 'add-add-product',
     templateUrl  : './add-product.component.html',
@@ -21,6 +24,8 @@ import { EcommerceProductService } from 'app/main/product/add-product/product.se
 export class AddProductComponent implements OnInit, OnDestroy
 {
     product: Product;
+    categories=[];
+    salesUnits=[{id:"1",name:"Piece"},{id:2,name:'dozen box'}];
     pageType: string;
     productForm: FormGroup;
 
@@ -39,7 +44,9 @@ export class AddProductComponent implements OnInit, OnDestroy
         private _ecommerceProductService: EcommerceProductService,
         private _formBuilder: FormBuilder,
         private _location: Location,
-        private _matSnackBar: MatSnackBar
+        private _matSnackBar: MatSnackBar,
+        private _httpCategoryService: HttpCategoryService,
+        private _notificationService: NotificationService,
     )
     {
         // Set the default
@@ -75,6 +82,17 @@ export class AddProductComponent implements OnInit, OnDestroy
                 }
 
                 this.productForm = this.createProductForm();
+            });
+
+            this._httpCategoryService.getAllCategories().subscribe((data) => {
+                const statusCode=_.get(data,'statusCode');
+                if(statusCode==='0000'){
+                    this.categories= _.get(data,'categories',[]);
+                }else{
+                    this._notificationService.show(SNACK_BAR_MSGS.genericError,'error');
+                }               
+            },(error)=>{
+                this._notificationService.show(SNACK_BAR_MSGS.genericError,'error');
             });
     }
 
@@ -118,7 +136,9 @@ export class AddProductComponent implements OnInit, OnDestroy
             depth           : [this.product.depth],
             weight          : [this.product.weight],
             extraShippingFee: [this.product.extraShippingFee],
-            active          : [this.product.active]
+            active          : [this.product.active],
+            category        : [this.product.category],
+            salesUnit       : [this.product.salesUnit]
         });
     }
 

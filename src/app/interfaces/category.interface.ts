@@ -1,4 +1,5 @@
 export interface CategoryResponse{
+    statusCode?:string;
     categories:CategoryDetails[]
 }
 export interface GetCategoryResponse{

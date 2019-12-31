@@ -18,8 +18,8 @@
                 </button>
 
                 <div class="product-image mr-8 mr-sm-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
-                    <img *ngIf="product.images[0]" [src]="product.images[0].url">
-                    <img *ngIf="!product.images[0]" [src]="'assets/images/ecommerce/product-image-placeholder.png'">
+                    <img *ngIf="product.image" src="data:image/png;base64,{{product.image}}">
+                    <img *ngIf="!product.image" [src]="'assets/images/ecommerce/product-image-placeholder.png'">
                 </div>
 
                 <div fxLayout="column" fxLayoutAlign="start start" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
@@ -93,20 +93,19 @@
                             <div class="tab-content p-24" fusePerfectScrollbar>
                                 <div fxLayout="row wrap" fxLayoutAlign="start start">
 
-                                    <div *ngIf="product.images.length === 0" class="product-image" fxlayout="row" fxLayoutAlign="center center">
+                                    <div *ngIf="!product.image" class="product-image" fxlayout="row" fxLayoutAlign="center center">
                                         <img class="media" [src]="'assets/images/ecommerce/product-image-placeholder.png'">
                                     </div>
 
-                                    <div *ngFor="let image of product.images">
-                                        <div *ngIf="product.images.length > 0" class="product-image" fxlayout="row" fxLayoutAlign="center center">
-                                            <img class="media" [src]="image.url">
-                                        </div>
+                                    <div *ngIf="product.image" class="product-image" fxlayout="row" fxLayoutAlign="center center">
+                                        <img class="media" src="data:image/png;base64,{{product.image}}">
                                     </div>
+
                                 </div>
                                 <button (click)="fileInput.click()">
-                                        <mat-icon class="s-20">library_add</mat-icon>
-                                        <span>Select</span>
-                                        <input #fileInput type="file" (change)="onFileInput($event)" accept="image/*" style="display:none;" />
+                                    <mat-icon class="s-20">library_add</mat-icon>
+                                    <span>Select</span>
+                                    <input #fileInput type="file" (change)="onImageUpload($event)" accept="image/*" style="display:none;" />
                                 </button>
                             </div>
 
@@ -118,13 +117,13 @@
 
                                 <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
                                     <mat-label>Buying Price</mat-label>
-                                    <input matInput placeholder="Tax Excluded Price" name="priceTaxExcl" formControlName="priceTaxExcl" type="number">
+                                    <input matInput placeholder="Tax Excluded Price" name="buyingPrice" formControlName="buyingPrice" type="number" required>
                                     <span matPrefix>$&nbsp;</span>
                                 </mat-form-field>
 
                                 <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
                                     <mat-label>Selling Price</mat-label>
-                                    <input matInput placeholder="Tax Included Price" name="priceTaxIncl" formControlName="priceTaxIncl" type="number">
+                                    <input matInput placeholder="Tax Included Price" name="sellingPrice" formControlName="sellingPrice" type="number" required>
                                     <span matPrefix>$&nbsp;</span>
                                 </mat-form-field>
 

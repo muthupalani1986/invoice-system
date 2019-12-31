@@ -15,17 +15,16 @@ import * as _ from 'lodash';
 import { NotificationService } from '../../../services/notification.service';
 import { SNACK_BAR_MSGS } from '../../../constants/notification.constants';
 @Component({
-    selector     : 'add-add-product',
-    templateUrl  : './add-product.component.html',
-    styleUrls    : ['./add-product.component.scss'],
+    selector: 'add-add-product',
+    templateUrl: './add-product.component.html',
+    styleUrls: ['./add-product.component.scss'],
     encapsulation: ViewEncapsulation.None,
-    animations   : fuseAnimations
+    animations: fuseAnimations
 })
-export class AddProductComponent implements OnInit, OnDestroy
-{
+export class AddProductComponent implements OnInit, OnDestroy {
     product: Product;
-    categories=[];
-    salesUnits=[{id:"1",name:"Piece"},{id:2,name:'dozen box'}];
+    categories = [];
+    salesUnits = [{ id: "1", name: "Piece" }, { id: 2, name: 'dozen box' }];
     pageType: string;
     productForm: FormGroup;
 
@@ -47,8 +46,7 @@ export class AddProductComponent implements OnInit, OnDestroy
         private _matSnackBar: MatSnackBar,
         private _httpCategoryService: HttpCategoryService,
         private _notificationService: NotificationService,
-    )
-    {
+    ) {
         // Set the default
         this.product = new Product();
 
@@ -63,20 +61,17 @@ export class AddProductComponent implements OnInit, OnDestroy
     /**
      * On init
      */
-    ngOnInit(): void
-    {
+    ngOnInit(): void {
         // Subscribe to update product on changes
         this._ecommerceProductService.onProductChanged
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(product => {
 
-                if ( product )
-                {
+                if (product) {
                     this.product = new Product(product);
                     this.pageType = 'edit';
                 }
-                else
-                {
+                else {
                     this.pageType = 'new';
                     this.product = new Product();
                 }
@@ -84,23 +79,22 @@ export class AddProductComponent implements OnInit, OnDestroy
                 this.productForm = this.createProductForm();
             });
 
-            this._httpCategoryService.getAllCategories().subscribe((data) => {
-                const statusCode=_.get(data,'statusCode');
-                if(statusCode==='0000'){
-                    this.categories= _.get(data,'categories',[]);
-                }else{
-                    this._notificationService.show(SNACK_BAR_MSGS.genericError,'error');
-                }               
-            },(error)=>{
-                this._notificationService.show(SNACK_BAR_MSGS.genericError,'error');
-            });
+        this._httpCategoryService.getAllCategories().subscribe((data) => {
+            const statusCode = _.get(data, 'statusCode');
+            if (statusCode === '0000') {
+                this.categories = _.get(data, 'categories', []);
+            } else {
+                this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
+            }
+        }, (error) => {
+            this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
+        });
     }
 
     /**
      * On destroy
      */
-    ngOnDestroy(): void
-    {
+    ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();
@@ -115,38 +109,27 @@ export class AddProductComponent implements OnInit, OnDestroy
      *
      * @returns {FormGroup}
      */
-    createProductForm(): FormGroup
-    {
+    createProductForm(): FormGroup {
         return this._formBuilder.group({
-            id              : [this.product.id],
-            name            : [this.product.name],
-            handle          : [this.product.handle],
-            description     : [this.product.description],
-            categories      : [this.product.categories],
-            tags            : [this.product.tags],
-            images          : [this.product.images],
-            priceTaxExcl    : [this.product.priceTaxExcl],
-            priceTaxIncl    : [this.product.priceTaxIncl],
-            taxRate         : [this.product.taxRate],
-            comparedPrice   : [this.product.comparedPrice],
-            quantity        : [this.product.quantity],
-            sku             : [this.product.sku],
-            width           : [this.product.width],
-            height          : [this.product.height],
-            depth           : [this.product.depth],
-            weight          : [this.product.weight],
-            extraShippingFee: [this.product.extraShippingFee],
-            active          : [this.product.active],
-            category        : [this.product.category],
-            salesUnit       : [this.product.salesUnit]
+            id: [this.product.id],
+            name: [this.product.name],
+            handle: [this.product.handle],
+            description: [this.product.description],
+            image: [this.product.image],
+            buyingPrice: [this.product.buyingPrice],
+            sellingPrice: [this.product.sellingPrice],
+            taxRate: [this.product.taxRate],
+            quantity: [this.product.quantity],
+            category: [this.product.category],
+            salesUnit: [this.product.salesUnit],
+            code: [this.product.code]
         });
     }
 
     /**
      * Save product
      */
-    saveProduct(): void
-    {
+    saveProduct(): void {
         const data = this.productForm.getRawValue();
         data.handle = FuseUtils.handleize(data.name);
 
@@ -159,7 +142,7 @@ export class AddProductComponent implements OnInit, OnDestroy
                 // Show the success message
                 this._matSnackBar.open('Product saved', 'OK', {
                     verticalPosition: 'top',
-                    duration        : 2000
+                    duration: 2000
                 });
             });
     }
@@ -167,25 +150,50 @@ export class AddProductComponent implements OnInit, OnDestroy
     /**
      * Add product
      */
-    addProduct(): void
-    {
+    addProduct(): void {
         const data = this.productForm.getRawValue();
         data.handle = FuseUtils.handleize(data.name);
-
+        data.code = this.generateProductCode(data);
         this._ecommerceProductService.addProduct(data)
-            .then(() => {
-
+            .then((response) => {
                 // Trigger the subscription with new data
                 this._ecommerceProductService.onProductChanged.next(data);
-
-                // Show the success message
-                this._matSnackBar.open('Product added', 'OK', {
-                    verticalPosition: 'top',
-                    duration        : 2000
-                });
-
+                this._notificationService.show(response.message, 'success');
                 // Change the location with new one
-                this._location.go('apps/e-commerce/products/' + this.product.id + '/' + this.product.handle);
+                this._location.go('product/' + this.product.id + '/' + this.product.handle);
+            }, (error) => {
+                this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
             });
+    }
+    public onImageUpload(evt) {
+
+        var files = evt.target.files;
+        var file = files[0];
+
+        if (files && file) {
+            var reader = new FileReader();
+
+            reader.onload = this.handleReaderLoaded.bind(this);
+
+            reader.readAsBinaryString(file);
+        }
+    }
+    private generateProductCode(data): string {
+        const category = _.find(this.categories, { 'id': data.category });
+        const numberOfWords = category.category_name.split(' ');
+        if (numberOfWords.length == 1) {
+            const catName = category.category_name.substring(0, 3).toUpperCase();
+            let code = catName.padEnd(3, 'C');
+            return code + '-';
+        }
+        const matches = category.category_name.match(/\b(\w)/g);
+        let code = matches.join('');
+        return code.toUpperCase() + '-';
+    }
+    private handleReaderLoaded(readerEvt) {
+        var binaryString = readerEvt.target.result;
+        const base64textString = btoa(binaryString);
+        this.productForm.patchValue({ image: base64textString });
+        this.product.image = base64textString;
     }
 }

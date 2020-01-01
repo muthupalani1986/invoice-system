@@ -24,7 +24,7 @@ import { SNACK_BAR_MSGS } from '../../../constants/notification.constants';
 export class AddProductComponent implements OnInit, OnDestroy {
     product: Product;
     categories = [];
-    salesUnits = [{ id: "1", name: "Piece" }, { id: 2, name: 'dozen box' }];
+    salesUnits = [{ id: 1, name: "Piece" }, { id: 2, name: 'dozen box' }];
     pageType: string;
     productForm: FormGroup;
 
@@ -132,18 +132,13 @@ export class AddProductComponent implements OnInit, OnDestroy {
     saveProduct(): void {
         const data = this.productForm.getRawValue();
         data.handle = FuseUtils.handleize(data.name);
-
         this._ecommerceProductService.saveProduct(data)
-            .then(() => {
-
+            .then((response) => {
                 // Trigger the subscription with new data
                 this._ecommerceProductService.onProductChanged.next(data);
-
-                // Show the success message
-                this._matSnackBar.open('Product saved', 'OK', {
-                    verticalPosition: 'top',
-                    duration: 2000
-                });
+                this._notificationService.show(response.message, 'success');
+            }, (err) => {
+                this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
             });
     }
 
@@ -157,6 +152,8 @@ export class AddProductComponent implements OnInit, OnDestroy {
         this._ecommerceProductService.addProduct(data)
             .then((response) => {
                 // Trigger the subscription with new data
+                data.id = response.id;
+                this.productForm.patchValue({ id: response.id });
                 this._ecommerceProductService.onProductChanged.next(data);
                 this._notificationService.show(response.message, 'success');
                 // Change the location with new one

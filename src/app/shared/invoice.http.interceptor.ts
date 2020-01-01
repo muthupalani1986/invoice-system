@@ -3,8 +3,8 @@ import { FuseProgressBarService } from '@fuse/components/progress-bar/progress-b
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export class InvoiceHttpInterceptor implements HttpInterceptor{
-    
+export class InvoiceHttpInterceptor implements HttpInterceptor {
+
     count = 0;
 
     constructor(private _fuseProgressBarService: FuseProgressBarService) { }
@@ -17,18 +17,12 @@ export class InvoiceHttpInterceptor implements HttpInterceptor{
 
         return next.handle(req)
 
-            .pipe ( tap (
+            .pipe(finalize(() => {
 
-                    event => console.log(event),
+                this.count--;
 
-                    error => console.log( error )
-
-                ), finalize(() => {
-
-                    this.count--;
-
-                    if ( this.count == 0 ) this._fuseProgressBarService.hide();
-                })
+                if (this.count == 0) this._fuseProgressBarService.hide();
+            })
             );
     }
 }

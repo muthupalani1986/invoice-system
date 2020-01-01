@@ -191,6 +191,7 @@ export class AddProductComponent implements OnInit, OnDestroy {
         var binaryString = readerEvt.target.result;
         const base64textString = btoa(binaryString);
         this.productForm.patchValue({ image: base64textString });
+        this.productForm.controls.image.markAsDirty();
         this.product.image = base64textString;
     }
 }

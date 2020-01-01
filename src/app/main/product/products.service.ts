@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpProductService } from '../../services/http-product.service';
 
 @Injectable()
 export class EcommerceProductsService implements Resolve<any>
@@ -15,9 +16,9 @@ export class EcommerceProductsService implements Resolve<any>
      * @param {HttpClient} _httpClient
      */
     constructor(
-        private _httpClient: HttpClient
-    )
-    {
+        private _httpClient: HttpClient,
+        private _httpProductService: HttpProductService
+    ) {
         // Set the defaults
         this.onProductsChanged = new BehaviorSubject({});
     }
@@ -29,8 +30,7 @@ export class EcommerceProductsService implements Resolve<any>
      * @param {RouterStateSnapshot} state
      * @returns {Observable<any> | Promise<any> | any}
      */
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> | Promise<any> | any
-    {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> | Promise<any> | any {
         return new Promise((resolve, reject) => {
 
             Promise.all([
@@ -49,18 +49,27 @@ export class EcommerceProductsService implements Resolve<any>
      *
      * @returns {Promise<any>}
      */
-    getProducts(): Promise<any>
-    {
+    getProducts(): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.products=[{"id":"1","image":"test","name":"Test","category":"test cat","priceTaxIncl":"10","quantity":5,"active":true}]
-            this.onProductsChanged.next(this.products);
-            resolve(this.products);
-            /*this._httpClient.get('api/e-commerce-products')
-                .subscribe((response: any) => {
-                    this.products = response;
-                    this.onProductsChanged.next(this.products);
-                    resolve(response);
-                }, reject);*/
+            this._httpProductService.getAllProducts().subscribe((res) => {
+                this.products = res.products;
+                this.onProductsChanged.next(this.products);
+                resolve(this.products);
+            }, reject);
+        });
+    }
+        /**
+     * Delete category
+     *
+     * @param category
+     * @returns {Promise<any>}
+     */
+    deleteProduct(category): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this._httpProductService.deleteProduct(category).subscribe((response: any) => {
+                resolve(response);               
+            }, reject)
+            
         });
     }
 }

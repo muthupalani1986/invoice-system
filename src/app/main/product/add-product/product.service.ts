@@ -4,6 +4,7 @@ import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/r
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpProductService } from '../../../services/http-product.service';
 import * as _ from 'lodash';
+import { FuseUtils } from '@fuse/utils';
 @Injectable()
 export class EcommerceProductService implements Resolve<any>
 {
@@ -60,15 +61,14 @@ export class EcommerceProductService implements Resolve<any>
                 resolve(false);
             }
             else {
-                this.product = { "id": "1", "image": "test", "name": "Test", "category": "test cat", "priceTaxIncl": "10", "quantity": 5, "active": true }
-                this.onProductChanged.next(this.product);
-                resolve(this.product);
-                /*this._httpClient.get('api/e-commerce-products/' + this.routeParams.id)
-                    .subscribe((response: any) => {
-                        this.product = response;
-                        this.onProductChanged.next(this.product);
-                        resolve(response);
-                    }, reject);*/
+
+                this._httpProductService.getProduct(this.routeParams.id).subscribe((res) => {
+                    this.product = res.product;
+                    this.product.handle = FuseUtils.handleize(this.product.name);
+                    this.onProductChanged.next(this.product);
+                    resolve(res);
+                }, reject);
+
             }
         });
     }

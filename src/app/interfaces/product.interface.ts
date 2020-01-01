@@ -27,4 +27,6 @@ export interface ProductDetails{
     quantity: number;
     salesUnit: number;
     code: number;
+    category_name?:string;
+    unit_name?:string;
 }

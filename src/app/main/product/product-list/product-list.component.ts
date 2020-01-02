@@ -76,7 +76,7 @@ export class ProductListComponent implements OnInit {
     }
     public editProduct(product: ProductDetails) {
         product.handle = FuseUtils.handleize(product.name);
-        this._router.navigate(['/product/' + product.id + '/' + product.handle]);
+        this._router.navigate(['/manage/product/' + product.id + '/' + product.handle]);
     }
     public deleteProduct(product: ProductDetails) {
         this.openDialog(product);

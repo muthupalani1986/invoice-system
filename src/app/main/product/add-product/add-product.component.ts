@@ -157,7 +157,7 @@ export class AddProductComponent implements OnInit, OnDestroy {
                 this._ecommerceProductService.onProductChanged.next(data);
                 this._notificationService.show(response.message, 'success');
                 // Change the location with new one
-                this._location.go('product/' + this.product.id + '/' + this.product.handle);
+                this._location.go('manage/' + this.product.id + '/' + this.product.handle);
             }, (error) => {
                 this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
             });

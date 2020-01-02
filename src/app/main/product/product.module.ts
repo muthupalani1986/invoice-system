@@ -32,7 +32,7 @@ import { SharedModule } from '../../shared/shared.module';
 
 const routes = [
   {
-    path: 'category/list',
+    path: 'category',
     component: CategoryComponent,
     resolve: {
       data: CategoriesService
@@ -53,21 +53,21 @@ const routes = [
     }
   },
   {
-    path: 'list',
+    path: 'product',
     component: ProductListComponent,
     resolve: {
       data: EcommerceProductsService
     }
   },
   {
-    path: ':id',
+    path: 'product/:id',
     component: AddProductComponent,
     resolve: {
       data: EcommerceProductService
     }
   },
   {
-    path: ':id/:handle',
+    path: 'product/:id/:handle',
     component: AddProductComponent,
     resolve: {
       data: EcommerceProductService

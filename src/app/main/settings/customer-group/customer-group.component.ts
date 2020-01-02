@@ -196,10 +196,29 @@ export class FilesDataSource extends DataSource<any>
     if (!this.filter) {
       return data;
     }
-    return FuseUtils.filterArrayByString(data, this.filter);
+    return this.filterArrayByString(data, this.filter);
   }
 
-  
+  /**
+     * Filter array by string
+     *
+     * @param mainArr
+     * @param searchText
+     * @returns {any}
+     */
+    private filterArrayByString(mainArr, searchText): any
+    {
+        if ( searchText === '' )
+        {
+            return mainArr;
+        }
+
+        searchText = searchText.toLowerCase();
+        return _.filter(mainArr, function(itemObj) { 
+          const columnValue=itemObj.name.toLowerCase();
+          return _.includes(columnValue,searchText); 
+        });
+    }
 
   /**
    * Sort data

@@ -149,7 +149,7 @@ export class AddCategoryComponent implements OnInit, OnDestroy {
         this._categoryService.onCategoryChanged.next(data);
         this._notificationService.show(response.message,'success');
         // Change the location with new one
-        this._location.go('product/category/' + this.category.id + '/' + this.category.handle);
+        this._location.go('manage/category/' + this.category.id + '/' + this.category.handle);
       },(err)=>{
         this._notificationService.show(SNACK_BAR_MSGS.genericError,'error');
       });

@@ -80,7 +80,7 @@ export class CategoryComponent implements OnInit {
   }
   public editCategory(category: Category) {
     category.handle = FuseUtils.handleize(category.category_name);
-    this._router.navigate(['/product/category/' + category.id + '/' + category.handle])
+    this._router.navigate(['/manage/category/' + category.id + '/' + category.handle])
   }
   public deleteCategory(category: any) {
     this.openDialog(category);

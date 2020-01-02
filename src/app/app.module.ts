@@ -33,7 +33,7 @@ const appRoutes: Routes = [
         loadChildren: () => import('./main/dashboard/dashboard.module').then(mod => mod.DashboardModule)
     },
     {
-        path: 'product',
+        path: 'manage',
         loadChildren: () => import('./main/product/product.module').then(mod => mod.ProductModule)
     },
     {

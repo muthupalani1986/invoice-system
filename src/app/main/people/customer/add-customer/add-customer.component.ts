@@ -15,7 +15,7 @@ import { NotificationService } from '../../../../services/notification.service';
 import { SNACK_BAR_MSGS } from '../../../../constants/notification.constants';
 import { CustomerRequestPayload } from '../../../../interfaces/customer.interface';
 @Component({
-  selector: 'app-add-category',
+  selector: 'app-add-customer',
   templateUrl: './add-customer.component.html',
   styleUrls: ['./add-customer.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -101,7 +101,15 @@ export class AddCustomerComponent implements OnInit, OnDestroy {
   createCustomerForm(): FormGroup {
     return this._formBuilder.group({
       id: [this.customer.id],
-      name: [this.customer.name]
+      name: [this.customer.name],
+      company_name: [this.customer.company_name],
+      email: [this.customer.email],
+      phone_number: [this.customer.phone_number],
+      address: [this.customer.address],
+      city: [this.customer.city],
+      state: [this.customer.state],
+      postal_code: [this.customer.postal_code],
+      country: [this.customer.country],
     });
   }
 
@@ -112,9 +120,9 @@ export class AddCustomerComponent implements OnInit, OnDestroy {
     const data = this.customerForm.getRawValue();
     data.name = data.name;
     data.handle=FuseUtils.handleize(data.name);
-    const requestPayload: CustomerRequestPayload = {
-      id: data.id,
-      name: data.name
+    const inputData:Customer=data;
+    const requestPayload: Customer = {
+      ...data
     }
     this._customerService.saveCustomer(requestPayload)
       .then((response) => {
@@ -134,8 +142,9 @@ export class AddCustomerComponent implements OnInit, OnDestroy {
     const data = this.customerForm.getRawValue();
     data.name = data.name;
     data.handle=FuseUtils.handleize(data.name);
-    const requestPayload: CustomerRequestPayload = {
-      name: data.name
+    const inputData:Customer=data;
+    const requestPayload: Customer = {
+      ...data
     }
     this._customerService.addCustomer(requestPayload)
       .then((response) => {        
@@ -145,7 +154,7 @@ export class AddCustomerComponent implements OnInit, OnDestroy {
         this._customerService.onCustomerChanged.next(data);
         this._notificationService.show(response.message,'success');
         // Change the location with new one
-        this._location.go('settings/customer-group/' + this.customer.id + '/' + this.customer.handle);
+        this._location.go('people/customer/' + this.customer.id + '/' + this.customer.handle);
       },(err)=>{
         this._notificationService.show(SNACK_BAR_MSGS.genericError,'error');
       });

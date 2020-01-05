@@ -19,13 +19,13 @@ import { CustomerService } from './customer.service';
 import { Customer } from './customer.model';
 
 @Component({
-  selector: 'app-customer-group',
-  templateUrl: './customer-group.component.html',
-  styleUrls: ['./customer-group.component.scss'],
+  selector: 'app-customer',
+  templateUrl: './customer.component.html',
+  styleUrls: ['./customer.component.scss'],
   animations: fuseAnimations,
   encapsulation: ViewEncapsulation.None
 })
-export class CustomerGroupComponent implements OnInit {
+export class CustomerComponent implements OnInit {
   dataSource: FilesDataSource | null;
   displayedColumns = ['name', 'actions'];
 
@@ -78,7 +78,7 @@ export class CustomerGroupComponent implements OnInit {
   }
   public editCustomer(customer: Customer) {
     customer.handle = FuseUtils.handleize(customer.name);
-    this._router.navigate(['/settings/customer-group/' + customer.id + '/' + customer.handle])
+    this._router.navigate(['/people/customer/' + customer.id + '/' + customer.handle])
   }
   public deleteCustomer(customer: Customer) {
     this.openDialog(customer);

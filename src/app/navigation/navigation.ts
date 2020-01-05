@@ -92,28 +92,16 @@ export const navigation: FuseNavigation[] = [
             icon: 'person',
             children: [
                 {
-                    id: 'user-list',
-                    title: 'User list',
+                    id: 'user',
+                    title: 'User',
                     type: 'item',
-                    url: '/people/user-list'
+                    url: '/people/user'
                 },
                 {
-                    id: 'add-user',
-                    title: 'Add User',
+                    id: 'customer',
+                    title: 'Customer',
                     type: 'item',
-                    url: '/people/add-user'
-                },
-                {
-                    id: 'customer-list',
-                    title: 'Customer list',
-                    type: 'item',
-                    url: '/people/customer-list'
-                },
-                {
-                    id: 'add-customer',
-                    title: 'Add Customer',
-                    type: 'item',
-                    url: '/people/add-customer'
+                    url: '/people/customer'
                 }
             ]
         }]
@@ -146,12 +134,6 @@ export const navigation: FuseNavigation[] = [
                     title: 'Unit',
                     type: 'item',
                     url: '/settings/unit'
-                },
-                {
-                    id: 'customer-group',
-                    title: 'Customer Group',
-                    type: 'item',
-                    url: '/settings/customer-group'
                 },
                 {
                     id: 'tax',

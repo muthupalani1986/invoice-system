@@ -12,8 +12,10 @@ import { CustomerRequestPayload, NewCustomerResponse, CustomerResponse, GetCusto
 export class HttpCustomerService {
 
   private apiBaseUrl = environment.apiBaseUrl;
-  private userDetails: any = this._sessionService.getItem(SESSION_STORAGE.currentUser);
-  constructor(private _http: HttpClient, private _sessionService: SessionService) { }
+  private userDetails: any;
+  constructor(private _http: HttpClient, private _sessionService: SessionService) { 
+    this.userDetails=this._sessionService.getItem(SESSION_STORAGE.currentUser);
+  }
   public addCustomer(payLodData: CustomerRequestPayload): Observable<NewCustomerResponse> {
     const url = this.apiBaseUrl + '/customer/new';
     return this._http.post<NewCustomerResponse>(url, { ...payLodData }, this.requestheader());

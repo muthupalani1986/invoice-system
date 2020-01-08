@@ -12,8 +12,10 @@ import { ProductRequestPayload, AddProductResponse, GetAllProductsResponse, GetP
 export class HttpProductService {
 
   private apiBaseUrl = environment.apiBaseUrl;
-  private userDetails: any = this._sessionService.getItem(SESSION_STORAGE.currentUser);
-  constructor(private _http: HttpClient, private _sessionService: SessionService) { }
+  private userDetails:any;
+  constructor(private _http: HttpClient, private _sessionService: SessionService) { 
+    this.userDetails = this._sessionService.getItem(SESSION_STORAGE.currentUser);
+  }
   public addProduct(payLodData: ProductRequestPayload): Observable<AddProductResponse> {
     const url = this.apiBaseUrl + '/product/new';
     return this._http.post<AddProductResponse>(url, { ...payLodData }, this.requestheader());

@@ -45,17 +45,12 @@ export const navigation: FuseNavigation[] = [
             type: 'collapsable',
             icon: 'assessment',
             children: [
+                
                 {
-                    id: 'quotation-list',
-                    title: 'Quotation list',
+                    id: 'quotations',
+                    title: 'Quotations',
                     type: 'item',
-                    url: '/quotation/list'
-                },
-                {
-                    id: 'quotation-add',
-                    title: 'Add Quotation',
-                    type: 'item',
-                    url: '/quotation/add'
+                    url: '/quote/quotation'
                 }
             ]
         },

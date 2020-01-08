@@ -22,35 +22,42 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SharedModule } from './shared/shared.module';
 import { DeleteConfirmationDialogComponent } from 'app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { InvoiceHttpInterceptor } from './shared/invoice.http.interceptor';
+import { AuthGuard } from './shared/auth.guard';
 
 const appRoutes: Routes = [
     {
         path: 'auth',
-        loadChildren: () => import('./main/authentication/auth.module').then(mod => mod.AuthModule)
+        loadChildren: () => import('./main/authentication/auth.module').then(mod => mod.AuthModule),
     },
     {
         path: 'dashboard',
-        loadChildren: () => import('./main/dashboard/dashboard.module').then(mod => mod.DashboardModule)
+        loadChildren: () => import('./main/dashboard/dashboard.module').then(mod => mod.DashboardModule),
+        canLoad:[AuthGuard]
     },
     {
         path: 'manage',
-        loadChildren: () => import('./main/product/product.module').then(mod => mod.ProductModule)
+        loadChildren: () => import('./main/product/product.module').then(mod => mod.ProductModule),
+        canLoad:[AuthGuard]
     },
     {
-        path: 'quotation',
-        loadChildren: () => import('./main/quotation/quotation.module').then(mod => mod.QuotationModule)
+        path: 'quote',
+        loadChildren: () => import('./main/quotation/quotation.module').then(mod => mod.QuotationModule),
+        canLoad:[AuthGuard]
     },
     {
         path: 'sales',
-        loadChildren: () => import('./main/sales/sales.module').then(mod => mod.SalesModule)
+        loadChildren: () => import('./main/sales/sales.module').then(mod => mod.SalesModule),
+        canLoad:[AuthGuard]
     },
     {
         path: 'people',
-        loadChildren: () => import('./main/people/people.module').then(mod => mod.PeopleModule)
+        loadChildren: () => import('./main/people/people.module').then(mod => mod.PeopleModule),
+        canLoad:[AuthGuard]
     },
     {
         path: 'settings',
-        loadChildren: () => import('./main/settings/settings.module').then(mod => mod.SettingsModule)
+        loadChildren: () => import('./main/settings/settings.module').then(mod => mod.SettingsModule),
+        canLoad:[AuthGuard]
     },
     {
         path: '**',

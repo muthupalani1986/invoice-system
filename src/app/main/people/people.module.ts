@@ -13,20 +13,24 @@ import { FuseWidgetModule } from '@fuse/components';
 import { CustomersService } from './customer/customers.service';
 import { CustomerService } from './customer/customer.service';
 import { AddCustomerComponent } from './customer/add-customer/add-customer.component';
+import { AuthGuard } from '../../shared/auth.guard';
 
 
 const routes = [
   {
     path: 'user-list',
-    component: UserListComponent
+    component: UserListComponent,
+    canActivate:[AuthGuard]
   },
   {
     path: 'add-user',
-    component: AddUserComponent
+    component: AddUserComponent,
+    canActivate:[AuthGuard]
   },
   {
     path: 'customer-list',
-    component: CustomerListComponent
+    component: CustomerListComponent,
+    canActivate:[AuthGuard]
   },
   {
     path: 'add-customer',
@@ -37,21 +41,24 @@ const routes = [
     component: CustomerComponent,
     resolve: {
       data: CustomersService
-    }
+    },
+    canActivate:[AuthGuard]
   },
   {
     path: 'customer/:id',
     component: AddCustomerComponent,
     resolve: {
       data: CustomerService
-    }
+    },
+    canActivate:[AuthGuard]
   },
   {
     path: 'customer/:id/:handle',
     component: AddCustomerComponent,
     resolve: {
       data: CustomerService
-    }
+    },
+    canActivate:[AuthGuard]
   },
   {
     path: '**',

@@ -12,8 +12,10 @@ import { Observable } from 'rxjs';
 export class HttpCategoryService {
 
   private apiBaseUrl = environment.apiBaseUrl;
-  private userDetails: any = this._sessionService.getItem(SESSION_STORAGE.currentUser);
-  constructor(private _http: HttpClient, private _sessionService: SessionService) { }
+  private userDetails;
+  constructor(private _http: HttpClient, private _sessionService: SessionService) {
+    this.userDetails=this._sessionService.getItem(SESSION_STORAGE.currentUser);
+   }
   public addCategory(payLodData: CategoryRequestPayload): Observable<NewCategoryResponse> {
     const url = this.apiBaseUrl + '/category/new';
     return this._http.post<NewCategoryResponse>(url, { ...payLodData }, this.requestheader());

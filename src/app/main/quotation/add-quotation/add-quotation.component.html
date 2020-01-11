@@ -13,7 +13,7 @@
             <!-- APP TITLE -->
             <div fxLayout="row" fxLayoutAlign="start center">
 
-                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="'/people/customer'">
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="'/quote/quotation'">
                     <mat-icon>arrow_back</mat-icon>
                 </button>
 
@@ -22,10 +22,10 @@
                         {{customer.name}}
                     </div>
                     <div class="h2" *ngIf="pageType ==='new'">
-                        New Customer
+                        New Quotation
                     </div>
                     <div class="subtitle secondary-text">
-                        <span>Customer Detail</span>
+                        <span>Quotation Details</span>
                     </div>
                 </div>
             </div>
@@ -52,53 +52,20 @@
 
                     <mat-tab-group>
 
-                        <mat-tab label="Basic Info">
-
-                            <div class="tab-content p-24" fusePerfectScrollbar>
-
-                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
-                                    <mat-label>Customer Name</mat-label>
-                                    <input matInput placeholder="Customer Name" name="name" formControlName="name" required>
-                                </mat-form-field>
-
-                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
-                                    <mat-label>Company Name</mat-label>
-                                    <input matInput placeholder="Company Name" name="name" formControlName="company_name">
-                                </mat-form-field>
-                            </div>
-
-                        </mat-tab>
-                        <mat-tab label="Communication Details">
-
+                        <mat-tab label="Quotation Info">
                             <div class="tab-content p-24" fusePerfectScrollbar>
                                 <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
-                                    <mat-label>Email</mat-label>
-                                    <input matInput placeholder="Email" name="email" formControlName="email">
+                                    <mat-label>Choose Customer</mat-label>
+                                    <mat-select>
+                                        <mat-option *ngFor="let customer of customers" [value]="customer.id">
+                                            {{customer.name}} ({{customer.phone_number}})
+                                        </mat-option>
+                                    </mat-select>
+
                                 </mat-form-field>
                                 <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
-                                    <mat-label>Phone Number</mat-label>
-                                    <input matInput placeholder="Phone" name="phone_number" formControlName="phone_number" required>
-                                </mat-form-field>
-                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
-                                    <mat-label>Address</mat-label>
-                                    <textarea matInput placeholder="Address" name="address" formControlName="address" rows="5" required>
-                                    </textarea>
-                                </mat-form-field>
-                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
-                                    <mat-label>City</mat-label>
-                                    <input matInput placeholder="City" name="city" formControlName="city">
-                                </mat-form-field>
-                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
-                                    <mat-label>State</mat-label>
-                                    <input matInput placeholder="State" name="state" formControlName="state">
-                                </mat-form-field>
-                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
-                                    <mat-label>Postal Code</mat-label>
-                                    <input matInput placeholder="Postal Code" name="postal_code" formControlName="postal_code">
-                                </mat-form-field>
-                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
-                                    <mat-label>Country</mat-label>
-                                    <input matInput placeholder="Country" name="country" formControlName="country">
+                                    <mat-label>Select Product</mat-label>
+                                    <input matInput placeholder="Please type product code" name="name">
                                 </mat-form-field>
                             </div>
                         </mat-tab>

@@ -14,6 +14,10 @@ import { NotificationService } from '../../../services/notification.service';
 import { SNACK_BAR_MSGS } from '../../../constants/notification.constants';
 import { QuotationService } from '../quotation.service';
 import { Quotation } from '../quotation.model';
+import { HttpCustomerService } from '../../../services/http-customer.service';
+import { CustomerDetails } from '../../../interfaces/customer.interface';
+import { ProductDetails } from '../../../interfaces/product.interface';
+import { HttpProductService } from '../../../services/http-product.service';
 
 
 @Component({
@@ -27,6 +31,8 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
   customer: Quotation;
   pageType: string;
   customerForm: FormGroup;
+  customers:CustomerDetails[];
+  products:ProductDetails[]
 
   // Private
   private _unsubscribeAll: Subject<any>;
@@ -44,7 +50,9 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
     private _formBuilder: FormBuilder,
     private _location: Location,
     private _matSnackBar: MatSnackBar,
-    private _notificationService:NotificationService
+    private _notificationService:NotificationService,
+    private _httpCustomerService:HttpCustomerService,
+    private _httpProductService:HttpProductService
   ) {
     // Set the default
     this.customer = new Quotation();
@@ -79,6 +87,19 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
         }
 
         this.customerForm = this.createCustomerForm();
+      });
+
+      this._httpCustomerService.getAllCustomers()
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(customers => {
+        this.customers=_.get(customers,'customers',[]);
+      });
+
+      this._httpProductService.getAllProducts(true)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(products => {
+        this.products=_.get(products,'products',[]);
+        console.log("this.products",this.products);
       });
   }
 

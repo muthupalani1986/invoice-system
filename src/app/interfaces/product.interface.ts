@@ -17,15 +17,15 @@ export interface GetProductResponse{
 export interface ProductDetails{
     id: string;
     name: string;
-    handle: string;
+    handle?: string;
     description: string;
     category: number;
-    image: string;
+    image?: string;
     sellingPrice: number;
-    buyingPrice: number;
+    buyingPrice?: number;
     taxRate: number;
     quantity: number;
-    salesUnit: number;
+    salesUnit?: number;
     code: number;
     category_name?:string;
     unit_name?:string;

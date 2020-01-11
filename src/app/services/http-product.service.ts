@@ -28,9 +28,13 @@ export class HttpProductService {
     const url = this.apiBaseUrl + '/product/delete';
     return this._http.post<AddProductResponse>(url, { ...payLodData }, this.requestheader());
   }
-  public getAllProducts(): Observable<GetAllProductsResponse> {
+  public getAllProducts(prodLookup=false): Observable<GetAllProductsResponse> {
     const url = this.apiBaseUrl + '/product';
-    return this._http.post<GetAllProductsResponse>(url, {}, this.requestheader());
+    let paylod={};
+    if(prodLookup){
+      paylod['prodLookup']=true
+    }
+    return this._http.post<GetAllProductsResponse>(url, paylod, this.requestheader());
   }
   public getProduct(id: number): Observable<GetProductResponse> {
     const url = this.apiBaseUrl + '/product/' + id;

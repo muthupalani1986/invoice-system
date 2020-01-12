@@ -1,9 +1,9 @@
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, OnDestroy, OnInit, ViewEncapsulation, ViewChild, ElementRef } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { Location } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, fromEvent } from 'rxjs';
+import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseUtils } from '@fuse/utils';
 import { Product } from 'app/main/product/add-product/product.model';
@@ -16,7 +16,7 @@ import { QuotationService } from '../quotation.service';
 import { Quotation } from '../quotation.model';
 import { HttpCustomerService } from '../../../services/http-customer.service';
 import { CustomerDetails } from '../../../interfaces/customer.interface';
-import { ProductDetails } from '../../../interfaces/product.interface';
+import { ProductDetails} from '../../../interfaces/product.interface';
 import { HttpProductService } from '../../../services/http-product.service';
 
 
@@ -28,15 +28,17 @@ import { HttpProductService } from '../../../services/http-product.service';
   animations: fuseAnimations
 })
 export class AddQuotationComponent implements OnInit, OnDestroy {
-  customer: Quotation;
+  quotation: Quotation;
   pageType: string;
-  customerForm: FormGroup;
-  customers:CustomerDetails[];
-  products:ProductDetails[]
-
+  quotationForm: FormGroup;
+  customers: CustomerDetails[];
+  products: ProductDetails[] = [];
+  displayedColumns = ['name', 'code','quantity','sellingPrice','discount','tax','SubTotal','Action'];
+  dataSource = [];
   // Private
   private _unsubscribeAll: Subject<any>;
-
+  @ViewChild('filter', { static: true })
+  filter: ElementRef;
   /**
    * Constructor
    *
@@ -50,12 +52,12 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
     private _formBuilder: FormBuilder,
     private _location: Location,
     private _matSnackBar: MatSnackBar,
-    private _notificationService:NotificationService,
-    private _httpCustomerService:HttpCustomerService,
-    private _httpProductService:HttpProductService
+    private _notificationService: NotificationService,
+    private _httpCustomerService: HttpCustomerService,
+    private _httpProductService: HttpProductService
   ) {
     // Set the default
-    this.customer = new Quotation();
+    this.quotation = new Quotation();
 
     // Set the private defaults
     this._unsubscribeAll = new Subject();
@@ -69,37 +71,64 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
    * On init
    */
   ngOnInit(): void {
-    
+
     this._quotationService.onCustomerChanged
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe(customer => {        
-        if (customer) {
-          const isValidData=_.get(customer,'name','404'); 
-          if(isValidData==='404'){
-            this._notificationService.show(SNACK_BAR_MSGS.genericError,'error');
-          }         
-          this.customer = new Quotation(customer);
+      .subscribe(quotation => {
+        if (quotation) {
+          this.quotation = new Quotation(quotation);
           this.pageType = 'edit';
         }
         else {
           this.pageType = 'new';
-          this.customer = new Quotation();
+          this.quotation = new Quotation();
         }
-
-        this.customerForm = this.createCustomerForm();
+        this.quotationForm = this.createQuotationForm();
+        this.createdOrdersForEdit();
       });
 
-      this._httpCustomerService.getAllCustomers()
+    this._httpCustomerService.getAllCustomers()
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(customers => {
-        this.customers=_.get(customers,'customers',[]);
+        this.customers = _.get(customers, 'customers', []);
       });
 
-      this._httpProductService.getAllProducts(true)
+    this._httpProductService.getAllProducts(true)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(products => {
-        this.products=_.get(products,'products',[]);
-        console.log("this.products",this.products);
+        this.products = _.get(products, 'products', []);
+        console.log('this.products', this.products);
+      });
+
+    fromEvent(this.filter.nativeElement, 'keyup')
+      .pipe(
+        takeUntil(this._unsubscribeAll),
+        debounceTime(150),
+        distinctUntilChanged()
+      )
+      .subscribe(() => {
+        if (!this.products) {
+          return;
+        }
+        const prodCode = this.filter.nativeElement.value ? this.filter.nativeElement.value.toUpperCase() : '';
+        const productDetails: ProductDetails = _.find(this.products, { code: prodCode }) as ProductDetails;        
+              
+        let orderIndex: number;
+        if (productDetails){
+          const productId = +(productDetails.id);
+          orderIndex = _.findIndex(this.ordersArray.value, { product_id: productDetails.id });        
+        }        
+        if (productDetails && orderIndex == -1){                   
+          productDetails.quantity = 1;
+          this.placeOrder(productDetails);
+          this.filter.nativeElement.value = '';
+        }
+        if (productDetails && orderIndex !== -1){          
+          productDetails.quantity = +(this.ordersArray.value[orderIndex].quantity + 1);
+          this.ordersArray.at(orderIndex).patchValue(productDetails);                    
+          this.filter.nativeElement.value = '';          
+        }
+        this.dataSource = this.ordersArray.value;
       });
   }
 
@@ -121,65 +150,130 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
    *
    * @returns {FormGroup}
    */
-  createCustomerForm(): FormGroup {
+  createQuotationForm(): FormGroup {
     return this._formBuilder.group({
-      id: [this.customer.id],
-      name: [this.customer.name],
-      company_name: [this.customer.company_name],
-      email: [this.customer.email],
-      phone_number: [this.customer.phone_number],
-      address: [this.customer.address],
-      city: [this.customer.city],
-      state: [this.customer.state],
-      postal_code: [this.customer.postal_code],
-      country: [this.customer.country],
+      id: [this.quotation.id],
+      inv_number: [this.quotation.inv_number],
+      quotation_number: [this.quotation.quotation_number],
+      status: [this.quotation.status],
+      note: [this.quotation.note],
+      order_discount: [this.quotation.order_discount],
+      shipping_cost: [this.quotation.shipping_cost],
+      customer_id: [this.quotation.customer_id],
+      order_tax: [this.quotation.order_tax],
+      orders: this._formBuilder.array([])
     });
   }
 
+  get ordersArray(): FormArray {
+    return this.quotationForm.get('orders') as FormArray;
+  }
+
+  addOrder(): FormGroup {
+    const orderGroup = this.orderFormGroup();
+    this.ordersArray.push(orderGroup);
+    this.quotationForm.markAsDirty();
+    return orderGroup;
+  }
+
+  orderFormGroup(): FormGroup {
+    return this._formBuilder.group({
+      id: [],
+      quotation_id: [],
+      product_id: [],
+      quantity: [],
+      sellingPrice: [],
+      discount: [],
+      tax: [],
+      name: [],
+      code: []
+    });
+  }
+
+  createdOrdersForEdit(){
+    _.each(this.quotation.orders, (order) => {
+      const group = this.addOrder();
+      group.patchValue({
+        id: order.id,
+        quotation_id: order.quotation_id,
+        product_id: order.product_id,
+        quantity: order.quantity,
+        sellingPrice: order.sellingPrice,
+        discount: order.discount,
+        tax: order.tax,
+        name: order.name,
+        code: order.code
+      });
+    });
+    this.dataSource = this.ordersArray.value;
+  }
+  placeOrder(order){
+    const group = this.addOrder();
+    group.patchValue({
+        id: 0,
+        quotation_id: this.quotation.id || 0,
+        product_id: order.id || 0,
+        quantity: order.quantity || 0,
+        sellingPrice: order.sellingPrice || 0,
+        discount: order.discount || 0,
+        tax: order.tax || 0,
+        name: order.name || '',
+        code: order.code || ''
+      });
+  }
   /**
-   * Save customer
+   * 
+   * @param index 
+   * @description: Delete order
    */
-  saveCustomer(): void {
-    const data = this.customerForm.getRawValue();
+  deleteOrder(index: number): void {
+    this.ordersArray.removeAt(index);
+    this.quotationForm.markAsDirty();
+  }
+  /**
+   * Save Quotation
+   */
+  saveQuotation(): void {
+    const data = this.quotationForm.getRawValue();
     data.name = data.name;
-    data.handle=FuseUtils.handleize(data.name);
-    const inputData:Quotation=data;
+    data.handle = FuseUtils.handleize(data.name);
+    const inputData: Quotation = data;
     const requestPayload: Quotation = {
       ...data
-    }
+    };
     this._quotationService.saveCustomer(requestPayload)
       .then((response) => {
         // Trigger the subscription with new data
         this._quotationService.onCustomerChanged.next(data);
-        this._notificationService.show(response.message,'success');
-        
-      },(err)=>{
-        this._notificationService.show(SNACK_BAR_MSGS.genericError,'error');
+        this._notificationService.show(response.message, 'success');
+
+      }, (err) => {
+        this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
       });
   }
 
   /**
-   * Add customer
+   * Add Quotation
    */
-  addCustomer(): void {
-    const data = this.customerForm.getRawValue();
+  addQuotation(): void {
+    const data = this.quotationForm.getRawValue();
     data.name = data.name;
-    data.handle=FuseUtils.handleize(data.name);
-    const inputData:Quotation=data;
+    data.handle = FuseUtils.handleize(data.name);
+    const inputData: Quotation = data;
     const requestPayload: Quotation = {
       ...data
-    }
+    };
     this._quotationService.addCustomer(requestPayload)
-      .then((response) => {        
+      .then((response) => {
         // Trigger the subscription with new data
         data.id = response.id;
-        this.customerForm.patchValue({ id: response.id });
+        this.quotationForm.patchValue({ id: response.id });
         this._quotationService.onCustomerChanged.next(data);
-        this._notificationService.show(response.message,'success');
-        // Change the location with new one
-        this._location.go('people/customer/' + this.customer.id + '/' + this.customer.handle);
-      },(err)=>{
-        this._notificationService.show(SNACK_BAR_MSGS.genericError,'error');
+        this._notificationService.show(response.message, 'success');
+        // Change the location with new one        
+        this._location.go('quote/quotation/' + this.quotation.id + '/' + this.quotation.quotation_number);
+      }, (err) => {
+        this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
       });
   }
 }

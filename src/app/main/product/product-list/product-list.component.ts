@@ -84,7 +84,7 @@ export class ProductListComponent implements OnInit {
     openDialog(product): void {
         const requestPayload = {
             id: product.id
-        }
+        };
         const dialogRef = this._dialog.open(DeleteConfirmationDialogComponent, {
             width: '250px'
         });
@@ -95,7 +95,7 @@ export class ProductListComponent implements OnInit {
                     const statusCode = _.get(respose, 'statusCode');
                     if (statusCode === '0000') {
                         this._notificationService.show(respose.message, 'success');
-                        let index: number = this._ecommerceProductsService.products.findIndex(item => item.id === requestPayload.id);
+                        const index: number = this._ecommerceProductsService.products.findIndex(item => item.id === requestPayload.id);
                         this._ecommerceProductsService.products.splice(index, 1);
                         this.dataSource = new FilesDataSource(this._ecommerceProductsService, this.paginator, this.sort);
                     } else {

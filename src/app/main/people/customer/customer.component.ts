@@ -78,7 +78,7 @@ export class CustomerComponent implements OnInit {
   }
   public editCustomer(customer: Customer) {
     customer.handle = FuseUtils.handleize(customer.name);
-    this._router.navigate(['/people/customer/' + customer.id + '/' + customer.handle])
+    this._router.navigate(['/people/customer/' + customer.id + '/' + customer.handle]);
   }
   public deleteCustomer(customer: Customer) {
     this.openDialog(customer);
@@ -86,7 +86,7 @@ export class CustomerComponent implements OnInit {
   openDialog(category): void {
     const requestPayload = {
       id: category.id
-    }
+    };
     const dialogRef = this._dialog.open(DeleteConfirmationDialogComponent, {
       width: '250px'
     });
@@ -95,7 +95,7 @@ export class CustomerComponent implements OnInit {
       if (result === 'ok') {
         this._customerService.deleteCustomer(requestPayload).then((respose) => {
           this._notificationService.show(respose.message, 'success');
-          let index: number = this._customersService.customers.findIndex(item => item.id === requestPayload.id);
+          const index: number = this._customersService.customers.findIndex(item => item.id === requestPayload.id);
           this._customersService.customers.splice(index, 1);
           this.dataSource = new FilesDataSource(this._customersService, this.paginator, this.sort);
         }, (err) => {
@@ -215,8 +215,8 @@ export class FilesDataSource extends DataSource<any>
 
         searchText = searchText.toLowerCase();
         return _.filter(mainArr, function(itemObj) { 
-          const columnValue=itemObj.name.toLowerCase();
-          return _.includes(columnValue,searchText); 
+          const columnValue = itemObj.name.toLowerCase();
+          return _.includes(columnValue, searchText); 
         });
     }
 

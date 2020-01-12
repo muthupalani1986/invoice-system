@@ -24,7 +24,7 @@ import { SNACK_BAR_MSGS } from '../../../constants/notification.constants';
 export class AddProductComponent implements OnInit, OnDestroy {
     product: Product;
     categories = [];
-    salesUnits = [{ id: 1, name: "Piece" }, { id: 2, name: 'dozen box' }];
+    salesUnits = [{ id: 1, name: 'Piece' }, { id: 2, name: 'dozen box' }];
     pageType: string;
     productForm: FormGroup;
 
@@ -164,11 +164,11 @@ export class AddProductComponent implements OnInit, OnDestroy {
     }
     public onImageUpload(evt) {
 
-        var files = evt.target.files;
-        var file = files[0];
+        const files = evt.target.files;
+        const file = files[0];
 
         if (files && file) {
-            var reader = new FileReader();
+            const reader = new FileReader();
 
             reader.onload = this.handleReaderLoaded.bind(this);
 
@@ -176,19 +176,19 @@ export class AddProductComponent implements OnInit, OnDestroy {
         }
     }
     private generateProductCode(data): string {
-        const category = _.find(this.categories, { 'id': data.category });
+        const category = _.find(this.categories, { id: data.category });
         const numberOfWords = category.category_name.split(' ');
         if (numberOfWords.length == 1) {
             const catName = category.category_name.substring(0, 3).toUpperCase();
-            let code = catName.padEnd(3, 'C');
+            const code = catName.padEnd(3, 'C');
             return code + '-';
         }
         const matches = category.category_name.match(/\b(\w)/g);
-        let code = matches.join('');
+        const code = matches.join('');
         return code.toUpperCase() + '-';
     }
     private handleReaderLoaded(readerEvt) {
-        var binaryString = readerEvt.target.result;
+        const binaryString = readerEvt.target.result;
         const base64textString = btoa(binaryString);
         this.productForm.patchValue({ image: base64textString });
         this.productForm.controls.image.markAsDirty();

@@ -56,7 +56,7 @@ export class QuotationsService implements Resolve<any>
                 this.customers = data.customers;
                 this.onCustomersChanged.next(this.customers);
                 resolve(this.customers);
-            },reject);            
+            }, reject);            
         });
     }
 }

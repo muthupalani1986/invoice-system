@@ -42,7 +42,7 @@ export class AddCustomerComponent implements OnInit, OnDestroy {
     private _formBuilder: FormBuilder,
     private _location: Location,
     private _matSnackBar: MatSnackBar,
-    private _notificationService:NotificationService
+    private _notificationService: NotificationService
   ) {
     // Set the default
     this.customer = new Customer();
@@ -64,9 +64,9 @@ export class AddCustomerComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(customer => {        
         if (customer) {
-          const isValidData=_.get(customer,'name','404'); 
-          if(isValidData==='404'){
-            this._notificationService.show(SNACK_BAR_MSGS.genericError,'error');
+          const isValidData = _.get(customer, 'name', '404'); 
+          if (isValidData === '404'){
+            this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
           }         
           this.customer = new Customer(customer);
           this.pageType = 'edit';
@@ -119,19 +119,19 @@ export class AddCustomerComponent implements OnInit, OnDestroy {
   saveCustomer(): void {
     const data = this.customerForm.getRawValue();
     data.name = data.name;
-    data.handle=FuseUtils.handleize(data.name);
-    const inputData:Customer=data;
+    data.handle = FuseUtils.handleize(data.name);
+    const inputData: Customer = data;
     const requestPayload: Customer = {
       ...data
-    }
+    };
     this._customerService.saveCustomer(requestPayload)
       .then((response) => {
         // Trigger the subscription with new data
         this._customerService.onCustomerChanged.next(data);
-        this._notificationService.show(response.message,'success');
+        this._notificationService.show(response.message, 'success');
         
-      },(err)=>{
-        this._notificationService.show(SNACK_BAR_MSGS.genericError,'error');
+      }, (err) => {
+        this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
       });
   }
 
@@ -141,22 +141,22 @@ export class AddCustomerComponent implements OnInit, OnDestroy {
   addCustomer(): void {
     const data = this.customerForm.getRawValue();
     data.name = data.name;
-    data.handle=FuseUtils.handleize(data.name);
-    const inputData:Customer=data;
+    data.handle = FuseUtils.handleize(data.name);
+    const inputData: Customer = data;
     const requestPayload: Customer = {
       ...data
-    }
+    };
     this._customerService.addCustomer(requestPayload)
       .then((response) => {        
         // Trigger the subscription with new data
         data.id = response.id;
         this.customerForm.patchValue({ id: response.id });
         this._customerService.onCustomerChanged.next(data);
-        this._notificationService.show(response.message,'success');
+        this._notificationService.show(response.message, 'success');
         // Change the location with new one
         this._location.go('people/customer/' + this.customer.id + '/' + this.customer.handle);
-      },(err)=>{
-        this._notificationService.show(SNACK_BAR_MSGS.genericError,'error');
+      }, (err) => {
+        this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
       });
   }
 }

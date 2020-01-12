@@ -56,7 +56,7 @@ export class CategoriesService implements Resolve<any>
                 this.categories = data.categories;
                 this.onCategoriesChanged.next(this.categories);
                 resolve(this.categories);
-            },reject);            
+            }, reject);            
         });
     }
 }

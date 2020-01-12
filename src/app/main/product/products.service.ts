@@ -68,7 +68,7 @@ export class EcommerceProductsService implements Resolve<any>
         return new Promise((resolve, reject) => {
             this._httpProductService.deleteProduct(category).subscribe((response: any) => {
                 resolve(response);               
-            }, reject)
+            }, reject);
             
         });
     }

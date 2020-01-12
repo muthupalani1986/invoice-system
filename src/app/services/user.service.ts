@@ -13,10 +13,10 @@ const httpOptions = {
   providedIn: 'root'
 })
 export class UserService {
-  private apiBaseUrl=environment.apiBaseUrl;
-  constructor(private http:HttpClient) { }
-  public login(payLodData:LoginRequestPayload):Observable<LoginResponse>{
-    const url=this.apiBaseUrl+'/user/login';
-    return this.http.post<LoginResponse>(url,{...payLodData},httpOptions);
+  private apiBaseUrl = environment.apiBaseUrl;
+  constructor(private http: HttpClient) { }
+  public login(payLodData: LoginRequestPayload): Observable<LoginResponse>{
+    const url = this.apiBaseUrl + '/user/login';
+    return this.http.post<LoginResponse>(url, {...payLodData}, httpOptions);
   }
 }

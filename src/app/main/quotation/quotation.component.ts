@@ -80,9 +80,15 @@ export class QuotationComponent implements OnInit {
         this.dataSource.filter = this.filter.nativeElement.value;
       });
   }
-  public editCustomer(customer: Quotation) {
-    customer.handle = FuseUtils.handleize(customer.name);
-    this._router.navigate(['/people/customer/' + customer.id + '/' + customer.handle])
+  public editCustomer(quotation: Quotation) {    
+    let billNumber;
+    const isInvNumberSet = quotation.inv_number && quotation.inv_number.length !== 0;
+    if (isInvNumberSet){
+      billNumber = quotation.inv_number;
+    }else{
+      billNumber = quotation.quotation_number;
+    }    
+    this._router.navigate(['/quote/quotation/' + quotation.id + '/' + billNumber]);
   }
   public deleteCustomer(customer: Quotation) {
     this.openDialog(customer);
@@ -90,7 +96,7 @@ export class QuotationComponent implements OnInit {
   openDialog(category): void {
     const requestPayload = {
       id: category.id
-    }
+    };
     const dialogRef = this._dialog.open(DeleteConfirmationDialogComponent, {
       width: '250px'
     });
@@ -99,7 +105,7 @@ export class QuotationComponent implements OnInit {
       if (result === 'ok') {
         this._quotationService.deleteCustomer(requestPayload).then((respose) => {
           this._notificationService.show(respose.message, 'success');
-          let index: number = this._quotationsService.customers.findIndex(item => item.id === requestPayload.id);
+          const index: number = this._quotationsService.customers.findIndex(item => item.id === requestPayload.id);
           this._quotationsService.customers.splice(index, 1);
           this.dataSource = new FilesDataSource(this._quotationsService, this.paginator, this.sort);
         }, (err) => {
@@ -219,8 +225,8 @@ export class FilesDataSource extends DataSource<any>
 
         searchText = searchText.toLowerCase();
         return _.filter(mainArr, function(itemObj) { 
-          const columnValue=itemObj.name.toLowerCase();
-          return _.includes(columnValue,searchText); 
+          const columnValue = itemObj.name.toLowerCase();
+          return _.includes(columnValue, searchText); 
         });
     }
 

@@ -3,35 +3,44 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { FuseUtils } from '@fuse/utils';
 
 export class Quotation {
-    id: string;
-    name: string;
-    handle: string;
-    company_name:string;
-    email:string;
-    phone_number:string;
-    address:string;
-    city:string;
-    state:string;
-    postal_code:string;
-    country:string;
+    id: number;
+    inv_number: string;
+    quotation_number: string;
+    status: number;
+    note: string;
+    order_discount: number;
+    shipping_cost: number;
+    customer_id: number;
+    order_tax: number;
+    orders: Order[];
 
     /**
      * Constructor
      *
-     * @param customer
+     * @param quotation
      */
-    constructor(customer?) {
-        customer = customer || {};
-        this.id = customer.id || FuseUtils.generateGUID();
-        this.name = customer.name || '';
-        this.handle = FuseUtils.handleize(this.name) || '';
-        this.company_name = customer.company_name || '';
-        this.email = customer.email || '';
-        this.phone_number = customer.phone_number || '';
-        this.address = customer.address || '';
-        this.city = customer.city || '';
-        this.state = customer.state || '';
-        this.postal_code = customer.postal_code || '';
-        this.country = customer.country || '';
+    constructor(quotation?) {
+        quotation = quotation || {};
+        this.id = quotation.id || 0;
+        this.inv_number = quotation.inv_number || '';
+        this.quotation_number = quotation.quotation_number || '';
+        this.status = quotation.status || 1;
+        this.note = quotation.note || '';
+        this.order_discount = quotation.order_discount || 0;
+        this.shipping_cost = quotation.shipping_cost || 0;
+        this.customer_id = quotation.customer_id || 0;
+        this.order_tax = quotation.order_tax || 0;
+        this.orders = quotation.orders || [];
     }
+}
+export class Order {
+    id: number;
+    quotation_id: number;
+    product_id: number;
+    quantity: number;
+    sellingPrice: number;
+    discount: number;
+    tax: number;
+    name: string;
+    code: string;
 }

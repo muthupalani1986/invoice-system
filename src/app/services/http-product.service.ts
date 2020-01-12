@@ -12,7 +12,7 @@ import { ProductRequestPayload, AddProductResponse, GetAllProductsResponse, GetP
 export class HttpProductService {
 
   private apiBaseUrl = environment.apiBaseUrl;
-  private userDetails:any;
+  private userDetails: any;
   constructor(private _http: HttpClient, private _sessionService: SessionService) { 
     this.userDetails = this._sessionService.getItem(SESSION_STORAGE.currentUser);
   }
@@ -28,11 +28,11 @@ export class HttpProductService {
     const url = this.apiBaseUrl + '/product/delete';
     return this._http.post<AddProductResponse>(url, { ...payLodData }, this.requestheader());
   }
-  public getAllProducts(prodLookup=false): Observable<GetAllProductsResponse> {
+  public getAllProducts(prodLookup= false): Observable<GetAllProductsResponse> {
     const url = this.apiBaseUrl + '/product';
-    let paylod={};
-    if(prodLookup){
-      paylod['prodLookup']=true
+    const paylod = {};
+    if (prodLookup){
+      paylod['prodLookup'] = true;
     }
     return this._http.post<GetAllProductsResponse>(url, paylod, this.requestheader());
   }

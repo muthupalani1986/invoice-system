@@ -77,7 +77,7 @@ export class CategoryService implements Resolve<any>
                         resolve();
                     }
 
-                }, reject)
+                }, reject);
             }
         });
     }
@@ -91,13 +91,13 @@ export class CategoryService implements Resolve<any>
     saveCategory(category): Promise<any> {
         return new Promise((resolve, reject) => {
             this._httpCategoryService.saveCategory(category).subscribe((response: any) => {
-                const statusCode=_.get(response,'statusCode','404');
-                if(statusCode==='0000'){
+                const statusCode = _.get(response, 'statusCode', '404');
+                if (statusCode === '0000'){
                     resolve(response);
                 }else{
                     reject();
                 }                
-            }, reject)
+            }, reject);
             
         });
     }
@@ -111,13 +111,13 @@ export class CategoryService implements Resolve<any>
     addCategory(category): Promise<any> {
         return new Promise((resolve, reject) => {
             this._httpCategoryService.addCategory(category).subscribe((response: any) => {
-                const statusCode=_.get(response,'statusCode','404');
-                if(statusCode==='0000'){
+                const statusCode = _.get(response, 'statusCode', '404');
+                if (statusCode === '0000'){
                     resolve(response);
                 }else{
                     reject();
                 }
-            }, reject)
+            }, reject);
         });
     }
 
@@ -130,13 +130,13 @@ export class CategoryService implements Resolve<any>
     deleteCategory(category): Promise<any> {
         return new Promise((resolve, reject) => {
             this._httpCategoryService.deleteCategory(category).subscribe((response: any) => {
-                const statusCode=_.get(response,'statusCode','404');
-                if(statusCode==='0000'){
+                const statusCode = _.get(response, 'statusCode', '404');
+                if (statusCode === '0000'){
                     resolve(response);
                 }else{
                     reject();
                 }                
-            }, reject)
+            }, reject);
             
         });
     }

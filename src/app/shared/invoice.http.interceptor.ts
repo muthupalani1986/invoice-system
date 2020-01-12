@@ -21,7 +21,7 @@ export class InvoiceHttpInterceptor implements HttpInterceptor {
 
                 this.count--;
 
-                if (this.count == 0) this._fuseProgressBarService.hide();
+                if (this.count == 0) { this._fuseProgressBarService.hide(); }
             })
             );
     }

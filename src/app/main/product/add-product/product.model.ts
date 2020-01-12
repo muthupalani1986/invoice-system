@@ -26,13 +26,13 @@ export class Product {
         this.name = product.name || '';
         this.handle = product.handle || FuseUtils.handleize(this.name);
         this.description = product.description || '';
-        this.image = product.image || ''
+        this.image = product.image || '';
         this.buyingPrice = product.buyingPrice || 0;
         this.sellingPrice = product.sellingPrice || 0;
         this.taxRate = product.taxRate || 0;
         this.quantity = product.quantity || 0;
         this.category = product.category || '';
         this.salesUnit = product.salesUnit || '';
-        this.code = product.code || 0
+        this.code = product.code || 0;
     }
 }

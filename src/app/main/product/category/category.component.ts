@@ -80,7 +80,7 @@ export class CategoryComponent implements OnInit {
   }
   public editCategory(category: Category) {
     category.handle = FuseUtils.handleize(category.category_name);
-    this._router.navigate(['/manage/category/' + category.id + '/' + category.handle])
+    this._router.navigate(['/manage/category/' + category.id + '/' + category.handle]);
   }
   public deleteCategory(category: any) {
     this.openDialog(category);
@@ -88,7 +88,7 @@ export class CategoryComponent implements OnInit {
   openDialog(category): void {
     const requestPayload = {
       id: category.id
-    }
+    };
     const dialogRef = this._dialog.open(DeleteConfirmationDialogComponent, {
       width: '250px'
     });
@@ -97,7 +97,7 @@ export class CategoryComponent implements OnInit {
       if (result === 'ok') {
         this._categoryService.deleteCategory(requestPayload).then((respose) => {
           this._notificationService.show(respose.message, 'success');
-          let index: number = this._categoriesService.categories.findIndex(item => item.id === requestPayload.id);
+          const index: number = this._categoriesService.categories.findIndex(item => item.id === requestPayload.id);
           this._categoriesService.categories.splice(index, 1);
           this.dataSource = new FilesDataSource(this._categoriesService, this.paginator, this.sort);
         }, (err) => {

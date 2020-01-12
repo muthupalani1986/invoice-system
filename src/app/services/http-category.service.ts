@@ -14,7 +14,7 @@ export class HttpCategoryService {
   private apiBaseUrl = environment.apiBaseUrl;
   private userDetails;
   constructor(private _http: HttpClient, private _sessionService: SessionService) {
-    this.userDetails=this._sessionService.getItem(SESSION_STORAGE.currentUser);
+    this.userDetails = this._sessionService.getItem(SESSION_STORAGE.currentUser);
    }
   public addCategory(payLodData: CategoryRequestPayload): Observable<NewCategoryResponse> {
     const url = this.apiBaseUrl + '/category/new';
@@ -32,8 +32,8 @@ export class HttpCategoryService {
     const url = this.apiBaseUrl + '/category';
     return this._http.post<CategoryResponse>(url, {}, this.requestheader());
   }
-  public getCategory(category_id:number): Observable<GetCategoryResponse> {
-    const url = this.apiBaseUrl + '/category/'+category_id;
+  public getCategory(category_id: number): Observable<GetCategoryResponse> {
+    const url = this.apiBaseUrl + '/category/' + category_id;
     return this._http.post<GetCategoryResponse>(url, {}, this.requestheader());
   }
   private requestheader() {

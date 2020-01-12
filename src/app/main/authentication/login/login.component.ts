@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
         private _router: Router,
         private _userService: UserService,
         private _notificationService: NotificationService,
-        private _sessionService:SessionService
+        private _sessionService: SessionService
     ) {
         // Configure the layout
         this._fuseConfigService.config = {
@@ -74,18 +74,18 @@ export class LoginComponent implements OnInit {
         const requestPaylod: LoginRequestPayload = {
             email_id: this.email.value,
             password: this.password.value
-        }
+        };
         
-        this._userService.login(requestPaylod).subscribe((data:LoginResponse) => {
-            const statusCode=_.get(data,'statusCode');
-            if(statusCode==='0000'){
-                this._sessionService.setItem(SESSION_STORAGE.currentUser,data);
+        this._userService.login(requestPaylod).subscribe((data: LoginResponse) => {
+            const statusCode = _.get(data, 'statusCode');
+            if (statusCode === '0000'){
+                this._sessionService.setItem(SESSION_STORAGE.currentUser, data);
                 this._router.navigate(['/dashboard']);
             }else{
-              this._notificationService.show(data.msg, "error");  
+              this._notificationService.show(data.msg, 'error');  
             }
         }, (err) => {            
-            this._notificationService.show(SNACK_BAR_MSGS.genericError, "error");
+            this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
         });
     }
     get email() {

@@ -22,7 +22,7 @@ const routes = [
     resolve: {
       data: QuotationsService
     },
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: 'quotation/:id',
@@ -30,7 +30,7 @@ const routes = [
     resolve: {
       data: QuotationService
     },
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: 'quotation/:id/:handle',
@@ -38,7 +38,7 @@ const routes = [
     resolve: {
       data: QuotationService
     },
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: '**',
@@ -47,7 +47,7 @@ const routes = [
 ];
 
 @NgModule({
-  declarations: [AddQuotationComponent,QuotationComponent],
+  declarations: [AddQuotationComponent, QuotationComponent],
   imports: [
     RouterModule.forChild(routes),
     CommonModule,
@@ -59,7 +59,7 @@ const routes = [
     FuseSharedModule,
     FuseWidgetModule
   ],
-  providers:[
+  providers: [
     QuotationService,
     QuotationsService
   ]

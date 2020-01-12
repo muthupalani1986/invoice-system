@@ -2,31 +2,31 @@ export interface ProductRequestPayload extends ProductDetails{
     
 }
 export interface AddProductResponse{
-    statusCode:string;
-    message:string;
-    id?:number;
+    statusCode: string;
+    message: string;
+    id?: number;
 }
 export interface GetAllProductsResponse{
-    statusCode:string;
-    products:ProductDetails[]
+    statusCode: string;
+    products: ProductDetails[];
 }
 export interface GetProductResponse{
-    statusCode:string;
-    product:ProductDetails
+    statusCode: string;
+    product: ProductDetails;
 }
 export interface ProductDetails{
-    id: string;
-    name: string;
+    id?: number;
+    name?: string;
     handle?: string;
-    description: string;
-    category: number;
+    description?: string;
+    category?: number;
     image?: string;
-    sellingPrice: number;
+    sellingPrice?: number;
     buyingPrice?: number;
-    taxRate: number;
-    quantity: number;
+    taxRate?: number;
+    quantity?: number;
     salesUnit?: number;
-    code: number;
-    category_name?:string;
-    unit_name?:string;
+    code: string;
+    category_name?: string;
+    unit_name?: string;
 }

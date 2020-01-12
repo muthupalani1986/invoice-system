@@ -20,17 +20,17 @@ const routes = [
   {
     path: 'user-list',
     component: UserListComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: 'add-user',
     component: AddUserComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: 'customer-list',
     component: CustomerListComponent,
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: 'add-customer',
@@ -42,7 +42,7 @@ const routes = [
     resolve: {
       data: CustomersService
     },
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: 'customer/:id',
@@ -50,7 +50,7 @@ const routes = [
     resolve: {
       data: CustomerService
     },
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: 'customer/:id/:handle',
@@ -58,7 +58,7 @@ const routes = [
     resolve: {
       data: CustomerService
     },
-    canActivate:[AuthGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: '**',
@@ -80,7 +80,7 @@ const routes = [
     FuseSharedModule,
     FuseWidgetModule,
   ],
-  providers:[
+  providers: [
     CustomersService,
     CustomerService
   ]

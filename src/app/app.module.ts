@@ -32,32 +32,32 @@ const appRoutes: Routes = [
     {
         path: 'dashboard',
         loadChildren: () => import('./main/dashboard/dashboard.module').then(mod => mod.DashboardModule),
-        canLoad:[AuthGuard]
+        canLoad: [AuthGuard]
     },
     {
         path: 'manage',
         loadChildren: () => import('./main/product/product.module').then(mod => mod.ProductModule),
-        canLoad:[AuthGuard]
+        canLoad: [AuthGuard]
     },
     {
         path: 'quote',
         loadChildren: () => import('./main/quotation/quotation.module').then(mod => mod.QuotationModule),
-        canLoad:[AuthGuard]
+        canLoad: [AuthGuard]
     },
     {
         path: 'sales',
         loadChildren: () => import('./main/sales/sales.module').then(mod => mod.SalesModule),
-        canLoad:[AuthGuard]
+        canLoad: [AuthGuard]
     },
     {
         path: 'people',
         loadChildren: () => import('./main/people/people.module').then(mod => mod.PeopleModule),
-        canLoad:[AuthGuard]
+        canLoad: [AuthGuard]
     },
     {
         path: 'settings',
         loadChildren: () => import('./main/settings/settings.module').then(mod => mod.SettingsModule),
-        canLoad:[AuthGuard]
+        canLoad: [AuthGuard]
     },
     {
         path: '**',
@@ -100,8 +100,8 @@ const appRoutes: Routes = [
     bootstrap: [
         AppComponent
     ],
-    entryComponents:[DeleteConfirmationDialogComponent],
-    providers:[{
+    entryComponents: [DeleteConfirmationDialogComponent],
+    providers: [{
         provide: HTTP_INTERCEPTORS,
         useClass: InvoiceHttpInterceptor,
         multi: true,

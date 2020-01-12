@@ -6,14 +6,14 @@ export class Customer {
     id: string;
     name: string;
     handle: string;
-    company_name:string;
-    email:string;
-    phone_number:string;
-    address:string;
-    city:string;
-    state:string;
-    postal_code:string;
-    country:string;
+    company_name: string;
+    email: string;
+    phone_number: string;
+    address: string;
+    city: string;
+    state: string;
+    postal_code: string;
+    country: string;
 
     /**
      * Constructor

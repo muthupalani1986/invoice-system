@@ -22,7 +22,7 @@ export class CustomerService implements Resolve<any>
      */
     constructor(
         private _httpClient: HttpClient,
-        private _httpCustomerService:HttpCustomerService
+        private _httpCustomerService: HttpCustomerService
     ) {
         // Set the defaults
         this.onCustomerChanged = new BehaviorSubject({});
@@ -77,7 +77,7 @@ export class CustomerService implements Resolve<any>
                         resolve();
                     }
 
-                }, reject)
+                }, reject);
             }
         });
     }
@@ -91,13 +91,13 @@ export class CustomerService implements Resolve<any>
     saveCustomer(customer): Promise<any> {
         return new Promise((resolve, reject) => {
             this._httpCustomerService.saveCustomer(customer).subscribe((response: any) => {
-                const statusCode=_.get(response,'statusCode','404');
-                if(statusCode==='0000'){
+                const statusCode = _.get(response, 'statusCode', '404');
+                if (statusCode === '0000'){
                     resolve(response);
                 }else{
                     reject();
                 }                
-            }, reject)
+            }, reject);
             
         });
     }
@@ -111,13 +111,13 @@ export class CustomerService implements Resolve<any>
     addCustomer(customer): Promise<any> {
         return new Promise((resolve, reject) => {
             this._httpCustomerService.addCustomer(customer).subscribe((response: any) => {
-                const statusCode=_.get(response,'statusCode','404');
-                if(statusCode==='0000'){
+                const statusCode = _.get(response, 'statusCode', '404');
+                if (statusCode === '0000'){
                     resolve(response);
                 }else{
                     reject();
                 }
-            }, reject)
+            }, reject);
         });
     }
 
@@ -130,13 +130,13 @@ export class CustomerService implements Resolve<any>
     deleteCustomer(category): Promise<any> {
         return new Promise((resolve, reject) => {
             this._httpCustomerService.deleteCustomer(category).subscribe((response: any) => {
-                const statusCode=_.get(response,'statusCode','404');
-                if(statusCode==='0000'){
+                const statusCode = _.get(response, 'statusCode', '404');
+                if (statusCode === '0000'){
                     resolve(response);
                 }else{
                     reject();
                 }                
-            }, reject)
+            }, reject);
             
         });
     }

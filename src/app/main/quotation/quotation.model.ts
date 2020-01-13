@@ -28,7 +28,7 @@ export class Quotation {
         this.note = quotation.note || '';
         this.order_discount = quotation.order_discount || 0;
         this.shipping_cost = quotation.shipping_cost || 0;
-        this.customer_id = quotation.customer_id || 0;
+        this.customer_id = quotation.customer_id || '';
         this.order_tax = quotation.order_tax || 0;
         this.orders = quotation.orders || [];
     }
@@ -38,7 +38,7 @@ export class Order {
     quotation_id: number;
     product_id: number;
     quantity: number;
-    sellingPrice: number;
+    unit_price: number;
     discount: number;
     tax: number;
     name: string;

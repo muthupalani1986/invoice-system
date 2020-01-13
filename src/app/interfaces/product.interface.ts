@@ -22,6 +22,7 @@ export interface ProductDetails{
     category?: number;
     image?: string;
     sellingPrice?: number;
+    unit_price?:number;
     buyingPrice?: number;
     taxRate?: number;
     quantity?: number;

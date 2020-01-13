@@ -7,14 +7,16 @@ import { FuseUtils } from '@fuse/utils';
 import * as _ from 'lodash';
 import { CustomerDetails } from '../../interfaces/customer.interface';
 import { HttpCustomerService } from '../../services/http-customer.service';
+import { HttpQuotationService } from '../../services/http-quotation.service';
+import { Quotation } from './quotation.model';
 
 
 @Injectable()
 export class QuotationService implements Resolve<any>
 {
     routeParams: any;
-    customer: CustomerDetails;
-    onCustomerChanged: BehaviorSubject<any>;
+    quotation: Quotation;
+    onQuotationChanged: BehaviorSubject<any>;
 
     /**
      * Constructor
@@ -23,10 +25,11 @@ export class QuotationService implements Resolve<any>
      */
     constructor(
         private _httpClient: HttpClient,
-        private _httpCustomerService: HttpCustomerService
+        private _httpCustomerService: HttpCustomerService,
+        private _httpQuotationService:HttpQuotationService
     ) {
         // Set the defaults
-        this.onCustomerChanged = new BehaviorSubject({});
+        this.onQuotationChanged = new BehaviorSubject({});
     }
 
     /**
@@ -42,7 +45,7 @@ export class QuotationService implements Resolve<any>
         return new Promise((resolve, reject) => {
 
             Promise.all([
-                this.getCustomer()
+                this.getQuotation()
             ]).then(
                 () => {
                     resolve();
@@ -57,24 +60,23 @@ export class QuotationService implements Resolve<any>
      *
      * @returns {Promise<any>}
      */
-    getCustomer(): Promise<any> {
+    getQuotation(): Promise<any> {
         return new Promise((resolve, reject) => {
 
             if (this.routeParams.id === 'new') {
-                this.onCustomerChanged.next(false);
+                this.onQuotationChanged.next(false);
                 resolve(false);
             }
             else {
-                this._httpCustomerService.getCustomer(this.routeParams.id).subscribe((response: any) => {
-                    const customerResponse = { ...response };
-                    const statusCode = _.get(customerResponse, 'statusCode');
+                this._httpQuotationService.getQuotation(this.routeParams.id).subscribe((response: any) => {
+                    const quotationResponse = { ...response };
+                    const statusCode = _.get(quotationResponse, 'statusCode');
                     if (statusCode === '0000') {
-                        this.customer = _.get(customerResponse, 'customer');
-                        this.customer.handle = FuseUtils.handleize(this.customer.name);
-                        this.onCustomerChanged.next(this.customer);
+                        this.quotation = _.get(quotationResponse, 'quotation');                        
+                        this.onQuotationChanged.next(this.quotation);
                         resolve(response);
                     } else {
-                        this.onCustomerChanged.next({});
+                        this.onQuotationChanged.next({});
                         resolve();
                     }
 
@@ -86,12 +88,12 @@ export class QuotationService implements Resolve<any>
     /**
      * Save customer
      *
-     * @param customer
+     * @param quotation
      * @returns {Promise<any>}
      */
-    saveCustomer(customer): Promise<any> {
+    saveQuotation(customer): Promise<any> {
         return new Promise((resolve, reject) => {
-            this._httpCustomerService.saveCustomer(customer).subscribe((response: any) => {
+            this._httpQuotationService.saveQuotation(customer).subscribe((response: any) => {
                 const statusCode = _.get(response, 'statusCode', '404');
                 if (statusCode === '0000'){
                     resolve(response);
@@ -104,14 +106,14 @@ export class QuotationService implements Resolve<any>
     }
 
     /**
-     * Add customer
+     * Add quotation
      *
      * @param customer
      * @returns {Promise<any>}
      */
-    addCustomer(customer): Promise<any> {
+    addQuotation(quotation): Promise<any> {
         return new Promise((resolve, reject) => {
-            this._httpCustomerService.addCustomer(customer).subscribe((response: any) => {
+            this._httpQuotationService.addQuotation(quotation).subscribe((response: any) => {
                 const statusCode = _.get(response, 'statusCode', '404');
                 if (statusCode === '0000'){
                     resolve(response);
@@ -123,20 +125,35 @@ export class QuotationService implements Resolve<any>
     }
 
     /**
-     * Delete customer
+     * Delete quotation
      *
-     * @param customer
+     * @param quotation
      * @returns {Promise<any>}
      */
-    deleteCustomer(category): Promise<any> {
+    deleteQuotation(quotation): Promise<any> {
         return new Promise((resolve, reject) => {
-            this._httpCustomerService.deleteCustomer(category).subscribe((response: any) => {
+            this._httpQuotationService.deleteQuotation(quotation).subscribe((response: any) => {
                 const statusCode = _.get(response, 'statusCode', '404');
                 if (statusCode === '0000'){
                     resolve(response);
                 }else{
                     reject();
                 }                
+            }, reject);
+            
+        });
+    }
+
+    /**
+     * Download quotation
+     *
+     * @param quotation
+     * @returns {Promise<any>}
+     */
+    downloadInvoice(id): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this._httpQuotationService.downloadInvoice(id).subscribe((response: any) => {
+                resolve();           
             }, reject);
             
         });

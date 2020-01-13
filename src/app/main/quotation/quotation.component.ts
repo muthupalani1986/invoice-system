@@ -20,6 +20,7 @@ import { SNACK_BAR_MSGS } from '../../constants/notification.constants';
 import { QuotationsService } from './quotations.service';
 import { QuotationService } from './quotation.service';
 import { Quotation } from './quotation.model';
+import { HttpQuotationService } from '../../services/http-quotation.service';
 
 
 @Component({
@@ -31,7 +32,7 @@ import { Quotation } from './quotation.model';
 })
 export class QuotationComponent implements OnInit {
   dataSource: FilesDataSource | null;
-  displayedColumns = ['name', 'actions'];
+  displayedColumns = ['quotation_number','inv_number', 'invoice','actions'];
 
   @ViewChild(MatPaginator, { static: true })
   paginator: MatPaginator;
@@ -50,7 +51,8 @@ export class QuotationComponent implements OnInit {
     private _router: Router,
     public _dialog: MatDialog,
     private _quotationService: QuotationService,
-    private _notificationService: NotificationService
+    private _notificationService: NotificationService,
+    private _httpQuotationService:HttpQuotationService
   ) {
     // Set the private defaults
     this._unsubscribeAll = new Subject();
@@ -80,7 +82,7 @@ export class QuotationComponent implements OnInit {
         this.dataSource.filter = this.filter.nativeElement.value;
       });
   }
-  public editCustomer(quotation: Quotation) {    
+  public editQuotation(quotation: Quotation) {    
     let billNumber;
     const isInvNumberSet = quotation.inv_number && quotation.inv_number.length !== 0;
     if (isInvNumberSet){
@@ -90,12 +92,12 @@ export class QuotationComponent implements OnInit {
     }    
     this._router.navigate(['/quote/quotation/' + quotation.id + '/' + billNumber]);
   }
-  public deleteCustomer(customer: Quotation) {
-    this.openDialog(customer);
+  public deleteQuotation(quotation: Quotation) {
+    this.openDialog(quotation);
   }
-  openDialog(category): void {
+  openDialog(quotation): void {
     const requestPayload = {
-      id: category.id
+      id: quotation.id
     };
     const dialogRef = this._dialog.open(DeleteConfirmationDialogComponent, {
       width: '250px'
@@ -103,10 +105,10 @@ export class QuotationComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result === 'ok') {
-        this._quotationService.deleteCustomer(requestPayload).then((respose) => {
+        this._quotationService.deleteQuotation(requestPayload).then((respose) => {
           this._notificationService.show(respose.message, 'success');
-          const index: number = this._quotationsService.customers.findIndex(item => item.id === requestPayload.id);
-          this._quotationsService.customers.splice(index, 1);
+          const index: number = this._quotationsService.quotations.findIndex(item => item.id === requestPayload.id);
+          this._quotationsService.quotations.splice(index, 1);
           this.dataSource = new FilesDataSource(this._quotationsService, this.paginator, this.sort);
         }, (err) => {
           this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
@@ -114,6 +116,28 @@ export class QuotationComponent implements OnInit {
 
       }
     });
+  }
+  onInvoice(quotation:Quotation):void{
+    if(quotation.status==1){
+      this.createInvoice(quotation);
+    }else{
+      this.downlloadInvoice(quotation);
+    }
+  }
+  private createInvoice(quotation:Quotation){
+    console.log("Create invoice");
+  }
+  private downlloadInvoice(quotation:Quotation){
+    console.log("Download invoice");
+    this._httpQuotationService.downloadInvoice(quotation.id).subscribe((data)=>{
+      console.log("Hello");
+    })
+   /* this._quotationService.downloadInvoice(quotation.id).then((respose) => {
+      console.log("Success");
+    }, (err) => {
+      console.log(err);
+      this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
+    });*/
   }
 }
 
@@ -136,7 +160,7 @@ export class FilesDataSource extends DataSource<any>
   ) {
     super();
 
-    this.filteredData = this._quotationsService.customers;
+    this.filteredData = this._quotationsService.quotations;
   }
 
   /**
@@ -146,7 +170,7 @@ export class FilesDataSource extends DataSource<any>
    */
   connect(): Observable<any[]> {
     const displayDataChanges = [
-      this._quotationsService.onCustomersChanged,
+      this._quotationsService.onQuotationsChanged,
       this._matPaginator.page,
       this._filterChange,
       this._matSort.sortChange
@@ -155,7 +179,7 @@ export class FilesDataSource extends DataSource<any>
     return merge(...displayDataChanges)
       .pipe(
         map(() => {
-          let data = this._quotationsService.customers.slice();
+          let data = this._quotationsService.quotations.slice();
 
           data = this.filterData(data);
 
@@ -225,8 +249,10 @@ export class FilesDataSource extends DataSource<any>
 
         searchText = searchText.toLowerCase();
         return _.filter(mainArr, function(itemObj) { 
-          const columnValue = itemObj.name.toLowerCase();
-          return _.includes(columnValue, searchText); 
+          console.log("itemObj",itemObj);
+          const quotation_number = itemObj.quotation_number.toLowerCase();
+          const inv_number = itemObj.inv_number ? itemObj.inv_number.toLowerCase():'';
+          return _.includes(quotation_number, searchText) || _.includes(inv_number, searchText); 
         });
     }
 
@@ -246,7 +272,7 @@ export class FilesDataSource extends DataSource<any>
       let propertyB: number | string = '';
 
       switch (this._matSort.active) {
-        case 'name':
+        case 'quotation_number':
           [propertyA, propertyB] = [a.name, b.name];
           break;
       }

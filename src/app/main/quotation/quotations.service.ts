@@ -3,13 +3,15 @@ import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/r
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpCustomerService } from '../../services/http-customer.service';
-
+import { Quotation } from './quotation.model';
+import { HttpQuotationService } from '../../services/http-quotation.service';
+import * as _ from 'lodash';
 
 @Injectable()
 export class QuotationsService implements Resolve<any>
 {
-    customers: any[];
-    onCustomersChanged: BehaviorSubject<any>;
+    quotations: Quotation[];
+    onQuotationsChanged: BehaviorSubject<any>;
 
     /**
      * Constructor
@@ -17,11 +19,11 @@ export class QuotationsService implements Resolve<any>
      * @param {HttpClient} _httpClient
      */
     constructor(
-        private _httpClient: HttpClient,
-        private _httpCustomerService: HttpCustomerService
+        private _httpClient: HttpClient,        
+        private _HttpQuotationService:HttpQuotationService
     ) {
         // Set the defaults
-        this.onCustomersChanged = new BehaviorSubject({});
+        this.onQuotationsChanged = new BehaviorSubject({});
     }
 
     /**
@@ -35,7 +37,7 @@ export class QuotationsService implements Resolve<any>
         return new Promise((resolve, reject) => {
 
             Promise.all([
-                this.getCustomers()
+                this.getQuotations()
             ]).then(
                 () => {
                     resolve();
@@ -50,12 +52,18 @@ export class QuotationsService implements Resolve<any>
      *
      * @returns {Promise<any>}
      */
-    getCustomers(): Promise<any> {
+    getQuotations(): Promise<any> {
         return new Promise((resolve, reject) => {
-            this._httpCustomerService.getAllCustomers().subscribe((data) => {
-                this.customers = data.customers;
-                this.onCustomersChanged.next(this.customers);
-                resolve(this.customers);
+            this._HttpQuotationService.getAllQuotations().subscribe((data) => {
+                const statusCode=_.get(data,'statusCode','404');
+                if(statusCode==='0000'){                    
+                    this.quotations = _.get(data,'quotations',[]);
+                    this.onQuotationsChanged.next(this.quotations);
+                    resolve(this.quotations);
+                }else{
+                    reject()
+                }
+                
             }, reject);            
         });
     }

@@ -16,7 +16,7 @@ import { QuotationService } from '../quotation.service';
 import { Quotation } from '../quotation.model';
 import { HttpCustomerService } from '../../../services/http-customer.service';
 import { CustomerDetails } from '../../../interfaces/customer.interface';
-import { ProductDetails} from '../../../interfaces/product.interface';
+import { ProductDetails } from '../../../interfaces/product.interface';
 import { HttpProductService } from '../../../services/http-product.service';
 
 
@@ -33,7 +33,7 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
   quotationForm: FormGroup;
   customers: CustomerDetails[];
   products: ProductDetails[] = [];
-  displayedColumns = ['name', 'code','quantity','sellingPrice','discount','tax','SubTotal','Action'];
+  displayedColumns = ['name', 'code', 'quantity', 'unit_price', 'discount', 'tax', 'lineTotal', 'Action'];
   dataSource = [];
   // Private
   private _unsubscribeAll: Subject<any>;
@@ -72,7 +72,7 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
 
-    this._quotationService.onCustomerChanged
+    this._quotationService.onQuotationChanged
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(quotation => {
         if (quotation) {
@@ -96,8 +96,7 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
     this._httpProductService.getAllProducts(true)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(products => {
-        this.products = _.get(products, 'products', []);
-        console.log('this.products', this.products);
+        this.products = _.get(products, 'products', []);        
       });
 
     fromEvent(this.filter.nativeElement, 'keyup')
@@ -111,24 +110,26 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
           return;
         }
         const prodCode = this.filter.nativeElement.value ? this.filter.nativeElement.value.toUpperCase() : '';
-        const productDetails: ProductDetails = _.find(this.products, { code: prodCode }) as ProductDetails;        
-              
+        const productDetails: ProductDetails = _.find(this.products, { code: prodCode }) as ProductDetails;
+
         let orderIndex: number;
-        if (productDetails){
+        if (productDetails) {
+          productDetails.unit_price=productDetails.sellingPrice;
           const productId = +(productDetails.id);
-          orderIndex = _.findIndex(this.ordersArray.value, { product_id: productDetails.id });        
-        }        
-        if (productDetails && orderIndex == -1){                   
+          orderIndex = _.findIndex(this.ordersArray.value, { product_id: productDetails.id });
+        }
+        if (productDetails && orderIndex == -1) {
           productDetails.quantity = 1;
           this.placeOrder(productDetails);
           this.filter.nativeElement.value = '';
         }
-        if (productDetails && orderIndex !== -1){          
+        if (productDetails && orderIndex !== -1) {
           productDetails.quantity = +(this.ordersArray.value[orderIndex].quantity + 1);
-          this.ordersArray.at(orderIndex).patchValue(productDetails);                    
-          this.filter.nativeElement.value = '';          
+          this.ordersArray.at(orderIndex).patchValue(productDetails);
+          this.filter.nativeElement.value = '';
         }
         this.dataSource = this.ordersArray.value;
+        this.updateOrderSummary();
       });
   }
 
@@ -161,8 +162,24 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
       shipping_cost: [this.quotation.shipping_cost],
       customer_id: [this.quotation.customer_id],
       order_tax: [this.quotation.order_tax],
-      orders: this._formBuilder.array([])
+      orders: this._formBuilder.array([]),
+      subtotal: [0],
+      taxAmount: [0],
+      discountAmount: [0],
+      grandTotal: [0]
     });
+  }
+
+  get order_discount(): any {
+    return this.quotationForm.get('order_discount');
+  }
+
+  get shipping_cost(): any {
+    return this.quotationForm.get('shipping_cost');
+  }
+
+  get order_tax(): any {
+    return this.quotationForm.get('order_tax');
   }
 
   get ordersArray(): FormArray {
@@ -182,15 +199,16 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
       quotation_id: [],
       product_id: [],
       quantity: [],
-      sellingPrice: [],
+      unit_price: [],
       discount: [],
       tax: [],
       name: [],
-      code: []
+      code: [],
+      lineTotal: [0]
     });
   }
 
-  createdOrdersForEdit(){
+  createdOrdersForEdit() {
     _.each(this.quotation.orders, (order) => {
       const group = this.addOrder();
       group.patchValue({
@@ -198,7 +216,7 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
         quotation_id: order.quotation_id,
         product_id: order.product_id,
         quantity: order.quantity,
-        sellingPrice: order.sellingPrice,
+        unit_price: order.unit_price,
         discount: order.discount,
         tax: order.tax,
         name: order.name,
@@ -206,45 +224,45 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
       });
     });
     this.dataSource = this.ordersArray.value;
+    this.updateOrderSummary();
   }
-  placeOrder(order){
+  placeOrder(order) {
     const group = this.addOrder();
     group.patchValue({
-        id: 0,
-        quotation_id: this.quotation.id || 0,
-        product_id: order.id || 0,
-        quantity: order.quantity || 0,
-        sellingPrice: order.sellingPrice || 0,
-        discount: order.discount || 0,
-        tax: order.tax || 0,
-        name: order.name || '',
-        code: order.code || ''
-      });
+      id: 0,
+      quotation_id: this.quotation.id || 0,
+      product_id: order.id || 0,
+      quantity: order.quantity || 0,
+      unit_price: order.unit_price || 0,
+      discount: order.discount || 0,
+      tax: order.tax || 0,
+      name: order.name || '',
+      code: order.code || ''
+    });
   }
   /**
    * 
    * @param index 
    * @description: Delete order
    */
-  deleteOrder(index: number): void {
+  deleteOrder(index: number): void {    
     this.ordersArray.removeAt(index);
     this.quotationForm.markAsDirty();
+    this.dataSource = this.ordersArray.value;
+    this.updateOrderSummary();
   }
   /**
    * Save Quotation
    */
   saveQuotation(): void {
-    const data = this.quotationForm.getRawValue();
-    data.name = data.name;
-    data.handle = FuseUtils.handleize(data.name);
-    const inputData: Quotation = data;
+    const data = this.quotationForm.getRawValue();        
     const requestPayload: Quotation = {
       ...data
     };
-    this._quotationService.saveCustomer(requestPayload)
+    this._quotationService.saveQuotation(requestPayload)
       .then((response) => {
         // Trigger the subscription with new data
-        this._quotationService.onCustomerChanged.next(data);
+        this._quotationService.onQuotationChanged.next(data);
         this._notificationService.show(response.message, 'success');
 
       }, (err) => {
@@ -252,28 +270,52 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
       });
   }
 
+
   /**
    * Add Quotation
    */
   addQuotation(): void {
-    const data = this.quotationForm.getRawValue();
-    data.name = data.name;
-    data.handle = FuseUtils.handleize(data.name);
-    const inputData: Quotation = data;
+    const data = this.quotationForm.getRawValue();    
     const requestPayload: Quotation = {
       ...data
     };
-    this._quotationService.addCustomer(requestPayload)
+    this._quotationService.addQuotation(requestPayload)
       .then((response) => {
         // Trigger the subscription with new data
         data.id = response.id;
+        data.quotation_number = response.quotation_number;
         this.quotationForm.patchValue({ id: response.id });
-        this._quotationService.onCustomerChanged.next(data);
+        this._quotationService.onQuotationChanged.next(data);
         this._notificationService.show(response.message, 'success');
         // Change the location with new one        
-        this._location.go('quote/quotation/' + this.quotation.id + '/' + this.quotation.quotation_number);
+        this._location.go('quote/quotation/' + this.quotation.id + '/' + response.quotation_number);
       }, (err) => {
         this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
       });
+  }
+  updateOrderSummary() {
+    let subtotal: number = 0
+    _.forEach(this.ordersArray.value, (item, index: number) => {
+      const amount = +(item.unit_price * item.quantity);
+      const disCountAmount = +((amount * item.discount) / 100);
+      const taxableAmount = +(amount - disCountAmount);
+      const tax = +((taxableAmount * item.tax) / 100);
+      const itemTotal = (taxableAmount + tax);
+      subtotal = subtotal + itemTotal;
+      this.ordersArray.at(index).patchValue({
+        lineTotal: itemTotal.toFixed(2)
+      });
+    });
+    const quotationForm = this.quotationForm.getRawValue();
+    const orderDisCountAmount = +((subtotal * quotationForm.order_discount) / 100);
+    const orderTaxableAmount = +((subtotal + quotationForm.shipping_cost) - orderDisCountAmount);
+    const orderTaxAmount = +((orderTaxableAmount * quotationForm.order_tax) / 100);
+    const grandTotal = (orderTaxableAmount + orderTaxAmount);
+    this.quotationForm.patchValue({
+      subtotal: subtotal.toFixed(2),
+      grandTotal: grandTotal.toFixed(2),
+      taxAmount: orderTaxAmount.toFixed(2),
+      discountAmount: orderDisCountAmount.toFixed(2)
+    })
   }
 }

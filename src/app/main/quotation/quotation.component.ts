@@ -145,7 +145,9 @@ export class QuotationComponent implements OnInit, OnDestroy {
     this._httpQuotationService.downloadInvoice(quotation);
   }
   ngOnDestroy() {
-    this.createSales$.unsubscribe();
+    if(this.createSales$){
+      this.createSales$.unsubscribe();
+    }    
   }
 }
 

@@ -14,7 +14,7 @@ export class HttpQuotationService {
 
   private apiBaseUrl = environment.apiBaseUrl;
   private userDetails: any;
-  constructor(private _http: HttpClient, private _sessionService: SessionService) { 
+  constructor(private _http: HttpClient, private _sessionService: SessionService) {
     this.userDetails = this._sessionService.getItem(SESSION_STORAGE.currentUser);
   }
   public addQuotation(payLodData: Quotation): Observable<NewQuotationResponse> {
@@ -37,9 +37,20 @@ export class HttpQuotationService {
     const url = this.apiBaseUrl + '/quotation/delete';
     return this._http.post<NewQuotationResponse>(url, { ...payLodData }, this.requestheader());
   }
-  public downloadInvoice(id: number): Observable<HttpResponse<Blob>> {
-    const url = this.apiBaseUrl + '/quotation/generate-invoice/' + id;
-    return this._http.post<HttpResponse<Blob>>(url, {}, this.requestheader());
+  public downloadInvoice(quotation: Quotation): void {
+    const url = this.apiBaseUrl + '/quotation/generate-invoice/' + quotation.id;
+    this._http.get(url, { responseType: "blob", headers: { 'Accept': 'application/pdf' } })
+      .subscribe(res => {       
+       var a = document.createElement("a");
+       a.href = URL.createObjectURL(res);
+       a.download = quotation.inv_number+'pdf';
+       // start download
+       a.click();
+      });
+  }
+  public createSale(id: number): Observable<NewQuotationResponse> {
+    const url = this.apiBaseUrl + '/quotation/create-sales/' + id;
+    return this._http.post<NewQuotationResponse>(url, {}, this.requestheader());
   }
   private requestheader() {
     const tokenId = this.userDetails.token;

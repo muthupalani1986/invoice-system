@@ -21,7 +21,7 @@ import { QuotationsService } from './quotations.service';
 import { QuotationService } from './quotation.service';
 import { Quotation } from './quotation.model';
 import { HttpQuotationService } from '../../services/http-quotation.service';
-
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-quotation',
@@ -32,7 +32,7 @@ import { HttpQuotationService } from '../../services/http-quotation.service';
 })
 export class QuotationComponent implements OnInit {
   dataSource: FilesDataSource | null;
-  displayedColumns = ['quotation_number','inv_number', 'invoice','actions'];
+  displayedColumns = ['quotation_number', 'inv_number', 'invoice', 'actions'];
 
   @ViewChild(MatPaginator, { static: true })
   paginator: MatPaginator;
@@ -52,7 +52,7 @@ export class QuotationComponent implements OnInit {
     public _dialog: MatDialog,
     private _quotationService: QuotationService,
     private _notificationService: NotificationService,
-    private _httpQuotationService:HttpQuotationService
+    private _httpQuotationService: HttpQuotationService
   ) {
     // Set the private defaults
     this._unsubscribeAll = new Subject();
@@ -82,14 +82,14 @@ export class QuotationComponent implements OnInit {
         this.dataSource.filter = this.filter.nativeElement.value;
       });
   }
-  public editQuotation(quotation: Quotation) {    
+  public editQuotation(quotation: Quotation) {
     let billNumber;
     const isInvNumberSet = quotation.inv_number && quotation.inv_number.length !== 0;
-    if (isInvNumberSet){
+    if (isInvNumberSet) {
       billNumber = quotation.inv_number;
-    }else{
+    } else {
       billNumber = quotation.quotation_number;
-    }    
+    }
     this._router.navigate(['/quote/quotation/' + quotation.id + '/' + billNumber]);
   }
   public deleteQuotation(quotation: Quotation) {
@@ -117,27 +117,32 @@ export class QuotationComponent implements OnInit {
       }
     });
   }
-  onInvoice(quotation:Quotation):void{
-    if(quotation.status==1){
+  onInvoice(quotation: Quotation): void {
+    if (quotation.status == 1) {
       this.createInvoice(quotation);
-    }else{
+    } else {
       this.downlloadInvoice(quotation);
     }
   }
-  private createInvoice(quotation:Quotation){
-    console.log("Create invoice");
-  }
-  private downlloadInvoice(quotation:Quotation){
-    console.log("Download invoice");
-    this._httpQuotationService.downloadInvoice(quotation.id).subscribe((data)=>{
-      console.log("Hello");
-    })
-   /* this._quotationService.downloadInvoice(quotation.id).then((respose) => {
-      console.log("Success");
-    }, (err) => {
-      console.log(err);
+  private createInvoice(quotation: Quotation) {
+    this._httpQuotationService.createSale(quotation.id).subscribe((saleRes) => {
+      const statusCode=_.get(saleRes,'statusCode');
+      if(statusCode==='0000'){
+        this._notificationService.show(saleRes.message, 'success');        
+        const rowIndex=_.findIndex(this._quotationsService.quotations, { 'id':quotation.id });
+        if(rowIndex!==-1){
+          this._quotationsService.quotations[rowIndex].inv_number=saleRes.invoice_number;
+          this._quotationsService.quotations[rowIndex].status=2;
+        }
+      }else{
+        this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
+      }
+    },(err) => {
       this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
-    });*/
+    });
+  }
+  private downlloadInvoice(quotation: Quotation) {    
+    this._httpQuotationService.downloadInvoice(quotation);
   }
 }
 
@@ -240,21 +245,18 @@ export class FilesDataSource extends DataSource<any>
      * @param searchText
      * @returns {any}
      */
-    private filterArrayByString(mainArr, searchText): any
-    {
-        if ( searchText === '' )
-        {
-            return mainArr;
-        }
-
-        searchText = searchText.toLowerCase();
-        return _.filter(mainArr, function(itemObj) { 
-          console.log("itemObj",itemObj);
-          const quotation_number = itemObj.quotation_number.toLowerCase();
-          const inv_number = itemObj.inv_number ? itemObj.inv_number.toLowerCase():'';
-          return _.includes(quotation_number, searchText) || _.includes(inv_number, searchText); 
-        });
+  private filterArrayByString(mainArr, searchText): any {
+    if (searchText === '') {
+      return mainArr;
     }
+
+    searchText = searchText.toLowerCase();
+    return _.filter(mainArr, function (itemObj) {      
+      const quotation_number = itemObj.quotation_number.toLowerCase();
+      const inv_number = itemObj.inv_number ? itemObj.inv_number.toLowerCase() : '';
+      return _.includes(quotation_number, searchText) || _.includes(inv_number, searchText);
+    });
+  }
 
   /**
    * Sort data

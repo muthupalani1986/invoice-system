@@ -5,6 +5,7 @@ export interface NewQuotationResponse{
     message: string;
     id?: number;
     quotation_number?:string;
+    invoice_number?:string;
 }
 export interface GetQuotationResponse{
     statusCode?: string;

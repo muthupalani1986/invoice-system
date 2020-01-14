@@ -152,9 +152,10 @@ export class QuotationService implements Resolve<any>
      */
     downloadInvoice(id): Promise<any> {
         return new Promise((resolve, reject) => {
-            this._httpQuotationService.downloadInvoice(id).subscribe((response: any) => {
+            resolve(); 
+            /*this._httpQuotationService.downloadInvoice(id).subscribe((response: any) => {
                 resolve();           
-            }, reject);
+            }, reject);*/
             
         });
     }

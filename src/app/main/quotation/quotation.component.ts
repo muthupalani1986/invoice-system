@@ -125,7 +125,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
     }
   }
   private createInvoice(quotation: Quotation) {
-    this._httpQuotationService.createSale(quotation.id).subscribe((saleRes) => {
+    this.createSales$=this._httpQuotationService.createSale(quotation.id).subscribe((saleRes) => {
       const statusCode = _.get(saleRes, 'statusCode');
       if (statusCode === '0000') {
         this._notificationService.show(saleRes.message, 'success');

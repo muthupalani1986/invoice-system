@@ -1,8 +1,8 @@
-import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { DataSource } from '@angular/cdk/collections';
-import { BehaviorSubject, fromEvent, merge, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, fromEvent, merge, Observable, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
 import { fuseAnimations } from '@fuse/animations';
@@ -30,7 +30,7 @@ import { saveAs } from 'file-saver';
   animations: fuseAnimations,
   encapsulation: ViewEncapsulation.None
 })
-export class QuotationComponent implements OnInit {
+export class QuotationComponent implements OnInit, OnDestroy {
   dataSource: FilesDataSource | null;
   displayedColumns = ['quotation_number', 'inv_number', 'invoice', 'actions'];
 
@@ -45,7 +45,7 @@ export class QuotationComponent implements OnInit {
 
   // Private
   private _unsubscribeAll: Subject<any>;
-
+  private createSales$: Subscription
   constructor(
     private _quotationsService: QuotationsService,
     private _router: Router,
@@ -126,23 +126,26 @@ export class QuotationComponent implements OnInit {
   }
   private createInvoice(quotation: Quotation) {
     this._httpQuotationService.createSale(quotation.id).subscribe((saleRes) => {
-      const statusCode=_.get(saleRes,'statusCode');
-      if(statusCode==='0000'){
-        this._notificationService.show(saleRes.message, 'success');        
-        const rowIndex=_.findIndex(this._quotationsService.quotations, { 'id':quotation.id });
-        if(rowIndex!==-1){
-          this._quotationsService.quotations[rowIndex].inv_number=saleRes.invoice_number;
-          this._quotationsService.quotations[rowIndex].status=2;
+      const statusCode = _.get(saleRes, 'statusCode');
+      if (statusCode === '0000') {
+        this._notificationService.show(saleRes.message, 'success');
+        const rowIndex = _.findIndex(this._quotationsService.quotations, { 'id': quotation.id });
+        if (rowIndex !== -1) {
+          this._quotationsService.quotations[rowIndex].inv_number = saleRes.invoice_number;
+          this._quotationsService.quotations[rowIndex].status = 2;
         }
-      }else{
+      } else {
         this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
       }
-    },(err) => {
+    }, (err) => {
       this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
     });
   }
-  private downlloadInvoice(quotation: Quotation) {    
+  private downlloadInvoice(quotation: Quotation) {
     this._httpQuotationService.downloadInvoice(quotation);
+  }
+  ngOnDestroy() {
+    this.createSales$.unsubscribe();
   }
 }
 
@@ -251,7 +254,7 @@ export class FilesDataSource extends DataSource<any>
     }
 
     searchText = searchText.toLowerCase();
-    return _.filter(mainArr, function (itemObj) {      
+    return _.filter(mainArr, function (itemObj) {
       const quotation_number = itemObj.quotation_number.toLowerCase();
       const inv_number = itemObj.inv_number ? itemObj.inv_number.toLowerCase() : '';
       return _.includes(quotation_number, searchText) || _.includes(inv_number, searchText);

@@ -19,6 +19,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { FuseSharedModule } from '@fuse/shared.module';
 import { FuseWidgetModule } from '@fuse/components/widget/widget.module';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 @NgModule({
     imports: [CommonModule, FormsModule, CommonModule,
         CommonModule,
@@ -36,7 +37,8 @@ import { MatDialogModule } from '@angular/material/dialog';
         MatTableModule,
         MatTabsModule,
         MatDialogModule,
-        ReactiveFormsModule],
+        ReactiveFormsModule,
+        MatTooltipModule],
     declarations: [DeleteConfirmationDialogComponent],
     exports: [CommonModule, FormsModule, MatButtonModule,
         CommonModule,
@@ -54,6 +56,7 @@ import { MatDialogModule } from '@angular/material/dialog';
         MatTableModule,
         MatTabsModule,
         MatDialogModule,
-        ReactiveFormsModule]
+        ReactiveFormsModule,
+        MatTooltipModule]
 })
 export class SharedModule { }

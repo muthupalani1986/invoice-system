@@ -40,10 +40,8 @@
 
         <!-- CONTENT CARD -->
         <div class="content-card">
-
             <mat-table class="products-table" #table [dataSource]="dataSource" matSort [@animateStagger]="{value:'50'}" fusePerfectScrollbar>
 
-                
                 <!-- Quotation number Column -->
                 <ng-container matColumnDef="quotation_number">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Quotation Number</mat-header-cell>
@@ -62,17 +60,26 @@
                 <!-- Actions Column -->
                 <ng-container matColumnDef="invoice">
                     <mat-header-cell *matHeaderCellDef>Invoice</mat-header-cell>
-                    <mat-cell *matCellDef="let quotation">                        
-                        <button mat-raised-button  class="add-product-button fuse-white mt-24 mt-md-0" (click)="onInvoice(quotation)">
-                            <span>{{quotation.status===1?'GENERATE INVOICE':'DOWNLOAD INVOICE'}}</span>
+                    <mat-cell *matCellDef="let quotation">
+                        <button mat-icon-button matTooltip="{{quotation.status===1 ? 'Download Quotation' : 'Download Invoice'}}" (click)="onDownloadReceipt(quotation)">
+                            <mat-icon>receipt</mat-icon>
                         </button>
+                        <button mat-icon-button matTooltip="Create invoice" (click)="onCreateInvoice(quotation)" *ngIf="quotation.status===1">
+                            <mat-icon>update</mat-icon>
+                        </button>
+
                     </mat-cell>
                 </ng-container>
                 <!-- Actions Column -->
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
                     <mat-cell *matCellDef="let quotation">
-                        <mat-icon (click)="editQuotation(quotation)">edit</mat-icon> <mat-icon (click)="deleteQuotation(quotation)">delete</mat-icon>                        
+                        <button mat-icon-button matTooltip="Edit" (click)="editQuotation(quotation)">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <button mat-icon-button matTooltip="Delete" (click)="deleteQuotation(quotation)">
+                            <mat-icon>delete</mat-icon>
+                        </button>                        
                     </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></mat-header-row>

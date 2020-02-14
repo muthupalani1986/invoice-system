@@ -39,11 +39,13 @@ export class HttpQuotationService {
   }
   public downloadInvoice(quotation: Quotation): void {
     const url = this.apiBaseUrl + '/quotation/generate-invoice/' + quotation.id;
+    const fileName=quotation.status===1 ? quotation.quotation_number : quotation.inv_number;
+    console.log("fileName",fileName);
     this._http.get(url, { responseType: "blob", headers: { 'Accept': 'application/pdf' } })
       .subscribe(res => {       
        var a = document.createElement("a");
        a.href = URL.createObjectURL(res);
-       a.download = quotation.inv_number+'pdf';
+       a.download = fileName;
        // start download
        a.click();
       });

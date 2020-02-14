@@ -117,12 +117,13 @@ export class QuotationComponent implements OnInit, OnDestroy {
       }
     });
   }
-  onInvoice(quotation: Quotation): void {
-    if (quotation.status == 1) {
+  onCreateInvoice(quotation: Quotation): void {
+    if (quotation.status == 1) {      
       this.createInvoice(quotation);
-    } else {
-      this.downlloadInvoice(quotation);
     }
+  }
+  onDownloadReceipt(quotation: Quotation):void{
+    this.downloadInvoice(quotation);
   }
   private createInvoice(quotation: Quotation) {
     this.createSales$=this._httpQuotationService.createSale(quotation.id).subscribe((saleRes) => {
@@ -141,7 +142,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
       this._notificationService.show(SNACK_BAR_MSGS.genericError, 'error');
     });
   }
-  private downlloadInvoice(quotation: Quotation) {
+  private downloadInvoice(quotation: Quotation) {
     this._httpQuotationService.downloadInvoice(quotation);
   }
   ngOnDestroy() {

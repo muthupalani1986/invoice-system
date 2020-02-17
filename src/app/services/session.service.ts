@@ -20,4 +20,7 @@ export class SessionService {
 		} catch (e) { }
 		return sessionData;
 	}
+	public removeItem(keyName){
+		sessionStorage.removeItem(keyName);
+	}
 }

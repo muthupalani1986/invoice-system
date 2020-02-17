@@ -38,7 +38,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         MatTabsModule,
         MatDialogModule,
         ReactiveFormsModule,
-        MatTooltipModule],
+        MatTooltipModule,
+        FuseWidgetModule],
     declarations: [DeleteConfirmationDialogComponent],
     exports: [CommonModule, FormsModule, MatButtonModule,
         CommonModule,
@@ -57,6 +58,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         MatTabsModule,
         MatDialogModule,
         ReactiveFormsModule,
-        MatTooltipModule]
+        MatTooltipModule,
+        FuseWidgetModule]
 })
 export class SharedModule { }

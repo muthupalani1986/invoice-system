@@ -7,6 +7,8 @@ import { FuseConfigService } from '@fuse/services/config.service';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FusePerfectScrollbarDirective } from '@fuse/directives/fuse-perfect-scrollbar/fuse-perfect-scrollbar.directive';
 import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
+import { SESSION_STORAGE } from '../../../../../constants/session.constants';
+import { SessionService } from '../../../../../services/session.service';
 
 @Component({
     selector     : 'navbar-vertical-style-1',
@@ -18,6 +20,7 @@ export class NavbarVerticalStyle1Component implements OnInit, OnDestroy
 {
     fuseConfig: any;
     navigation: any;
+    userDetails:any;
 
     // Private
     private _fusePerfectScrollbar: FusePerfectScrollbarDirective;
@@ -35,7 +38,8 @@ export class NavbarVerticalStyle1Component implements OnInit, OnDestroy
         private _fuseConfigService: FuseConfigService,
         private _fuseNavigationService: FuseNavigationService,
         private _fuseSidebarService: FuseSidebarService,
-        private _router: Router
+        private _router: Router,
+        private _sessionService:SessionService
     )
     {
         // Set the private defaults
@@ -89,7 +93,8 @@ export class NavbarVerticalStyle1Component implements OnInit, OnDestroy
      * On init
      */
     ngOnInit(): void
-    {
+    {        
+        this.userDetails=this._sessionService.getItem(SESSION_STORAGE.currentUser);
         this._router.events
             .pipe(
                 filter((event) => event instanceof NavigationEnd),

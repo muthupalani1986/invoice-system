@@ -1,0 +1,24 @@
+.widget-content{
+    flex-direction: column;
+    box-sizing: border-box;
+    display: flex;
+    place-content: center;
+    align-items: center;
+}
+.widget-title{
+    flex-direction: row;
+    box-sizing: border-box;
+    display: flex;
+    place-content: center space-between;
+    align-items: center;
+}
+.widget-group{
+    display: flex;
+    width: 100%;
+    padding: 37px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    div{
+        padding:5px;
+    }
+}

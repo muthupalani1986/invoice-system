@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot, ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpCustomerService } from '../../services/http-customer.service';
@@ -20,7 +20,8 @@ export class QuotationsService implements Resolve<any>
      */
     constructor(
         private _httpClient: HttpClient,        
-        private _HttpQuotationService:HttpQuotationService
+        private _HttpQuotationService:HttpQuotationService,
+        private _router:Router
     ) {
         // Set the defaults
         this.onQuotationsChanged = new BehaviorSubject({});
@@ -34,10 +35,11 @@ export class QuotationsService implements Resolve<any>
      * @returns {Observable<any> | Promise<any> | any}
      */
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> | Promise<any> | any {
+        
         return new Promise((resolve, reject) => {
-
+            
             Promise.all([
-                this.getQuotations()
+                this.getQuotations(route.url[0].path)
             ]).then(
                 () => {
                     resolve();
@@ -52,9 +54,9 @@ export class QuotationsService implements Resolve<any>
      *
      * @returns {Promise<any>}
      */
-    getQuotations(): Promise<any> {
+    getQuotations(type:string): Promise<any> {
         return new Promise((resolve, reject) => {
-            this._HttpQuotationService.getAllQuotations().subscribe((data) => {
+            this._HttpQuotationService.getAllQuotations(type).subscribe((data) => {
                 const statusCode=_.get(data,'statusCode','404');
                 if(statusCode==='0000'){                    
                     this.quotations = _.get(data,'quotations',[]);

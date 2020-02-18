@@ -56,21 +56,15 @@ export const navigation: FuseNavigation[] = [
         },
         {
             id: 'sales',
-            title: 'Sales',
+            title: 'Sale',
             type: 'collapsable',
             icon: 'shopping_cart',
             children: [
                 {
                     id: 'sales-list',
-                    title: 'Sales List',
+                    title: 'Sales',
                     type: 'item',
-                    url: '/sales/list'
-                },
-                {
-                    id: 'sales-add',
-                    title: 'Add Sales',
-                    type: 'item',
-                    url: '/sales/add'
+                    url: '/manageSales/sales'
                 }
             ]
         }]

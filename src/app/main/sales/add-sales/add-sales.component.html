@@ -1,1 +1,205 @@
-<p>add-sales works!</p>
+<div id="product" class="page-layout carded fullwidth inner-scroll">
+
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="'/quote/quotation'">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div fxLayout="column" fxLayoutAlign="start start" [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    <div class="h2" *ngIf="pageType ==='edit'">
+                        {{quotation.quotation_number}}
+                    </div>
+                    <div class="h2" *ngIf="pageType ==='new'">
+                        New Quotation
+                    </div>
+                    <div class="subtitle secondary-text">
+                        <span>Quotation Details</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+
+            <button mat-raised-button class="save-product-button" [disabled]="quotationForm.invalid|| dataSource.length===0" *ngIf="pageType ==='new'" (click)="addQuotation()">
+                <span>ADD</span>
+            </button>
+
+            <button mat-raised-button class="save-product-button" [disabled]="quotationForm.invalid || quotationForm.pristine || dataSource.length===0" *ngIf="pageType ==='edit'"
+                (click)="saveQuotation()">
+                <span>SAVE</span>
+            </button>
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+
+            <!-- CONTENT -->
+            <div class="content">
+
+                <form name="quotationForm" [formGroup]="quotationForm" class="product w-100-p" fxLayout="column" fxFlex>
+
+                    <mat-tab-group>
+
+                        <mat-tab label="Order Details">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Select Product</mat-label>
+                                    <input matInput placeholder="Please type product code" #filter>
+                                </mat-form-field>
+
+                                <mat-table class="products-table" #table [dataSource]="dataSource" matSort [@animateStagger]="{value:'50'}" formArrayName="orders">
+
+                                    <!-- Name Column -->
+                                    <ng-container matColumnDef="name">
+                                        <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+                                        <mat-cell *matCellDef="let order;let i = index;" [formGroupName]="i">
+                                            <p class="text-truncate">{{order.name}}</p>
+                                        </mat-cell>
+                                    </ng-container>
+                                    <!-- Code Column -->
+                                    <ng-container matColumnDef="code">
+                                        <mat-header-cell *matHeaderCellDef>Code</mat-header-cell>
+                                        <mat-cell *matCellDef="let order">
+                                            <p class="text-truncate">{{order.code}}</p>
+                                        </mat-cell>
+                                    </ng-container>
+                                    <!-- Quantity Column -->
+                                    <ng-container matColumnDef="quantity">
+                                        <mat-header-cell *matHeaderCellDef>Quantity</mat-header-cell>
+                                        <mat-cell *matCellDef="let order;let i = index;" [formGroupName]="i">
+                                            <mat-form-field>
+                                                <input matInput type="number" formControlName="quantity" required (keyup)="updateOrderSummary()">
+                                            </mat-form-field>
+                                        </mat-cell>
+                                    </ng-container>
+                                    <!-- Unit price Column -->
+                                    <ng-container matColumnDef="unit_price">
+                                        <mat-header-cell *matHeaderCellDef>Net Unit Price</mat-header-cell>
+                                        <mat-cell *matCellDef="let order;let i = index;" [formGroupName]="i">
+                                            <mat-form-field>
+                                                <input matInput type="number" formControlName="unit_price" required (keyup)="updateOrderSummary()">
+                                            </mat-form-field>
+                                        </mat-cell>
+                                    </ng-container>
+                                    <!-- Discount Column -->
+                                    <ng-container matColumnDef="discount">
+                                        <mat-header-cell *matHeaderCellDef>Discount</mat-header-cell>
+                                        <mat-cell *matCellDef="let order;let i = index;" [formGroupName]="i">
+                                            <mat-form-field>
+                                                <input matInput type="number" formControlName="discount" (keyup)="updateOrderSummary()">
+                                            </mat-form-field>
+                                        </mat-cell>
+                                    </ng-container>
+                                    <!-- Tax  Column -->
+                                    <ng-container matColumnDef="tax">
+                                        <mat-header-cell *matHeaderCellDef>Tax</mat-header-cell>
+                                        <mat-cell *matCellDef="let order;let i = index;" [formGroupName]="i">
+                                            <mat-form-field>
+                                                <input matInput type="number" formControlName="tax" (keyup)="updateOrderSummary()">
+                                            </mat-form-field>
+                                        </mat-cell>
+                                    </ng-container>
+                                    <!-- Subtotal  Column -->
+                                    <ng-container matColumnDef="lineTotal">
+                                        <mat-header-cell *matHeaderCellDef>Line Total</mat-header-cell>
+                                        <mat-cell *matCellDef="let order;let i = index;" [formGroupName]="i">
+                                            {{quotationForm?.value?.orders[i]?.lineTotal| currency:'AED':'symbol'}}
+                                        </mat-cell>
+                                    </ng-container>
+                                    <!-- Action  Column -->
+                                    <ng-container matColumnDef="Action">
+                                        <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
+                                        <mat-cell *matCellDef="let order;let i = index;" [formGroupName]="i">
+                                            <mat-icon (click)="deleteOrder(i)">delete</mat-icon>
+                                        </mat-cell>
+                                    </ng-container>
+
+                                    <mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></mat-header-row>
+                                    <mat-row *matRowDef="let order; columns: displayedColumns;" class="product" matRipple>
+                                    </mat-row>
+                                </mat-table>
+                                <div fxLayout="row" fxLayoutAlign="space-between">
+                                    <mat-form-field appearance="outline" floatLabel="always" fxFlex="30">
+                                        <mat-label>Order Tax</mat-label>
+                                        <input matInput placeholder="Order Tax" name="order_tax" formControlName="order_tax" type="number" (keyup)="updateOrderSummary()">
+                                        <span matSuffix>%</span>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" fxFlex="30">
+                                        <mat-label>Order Discount</mat-label>
+                                        <input matInput placeholder="Discount" name="Discount" formControlName="order_discount" type="number" (keyup)="updateOrderSummary()">
+                                        <span matSuffix>%</span>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" fxFlex="30">
+                                        <mat-label>Shipping Cost</mat-label>
+                                        <input matInput placeholder="Shipping" name="shipping_cost" formControlName="shipping_cost" type="number" (keyup)="updateOrderSummary()">
+                                    </mat-form-field>
+                                </div>
+                                <table class="simple invoice-table-footer">
+                                    <tbody>
+                                        <tr class="subtotal">
+                                            <td>SUBTOTAL</td>
+                                            <td>{{quotationForm.value.subtotal| currency:'AED':'symbol'}}</td>
+                                        </tr>
+                                        <tr class="tax">
+                                            <td>TAX</td>
+                                            <td>{{quotationForm.value.taxAmount| currency:'AED':'symbol'}}</td>
+                                        </tr>
+                                        <tr class="discount">
+                                            <td>DISCOUNT</td>
+                                            <td>-{{quotationForm.value.discountAmount| currency:'AED':'symbol'}}</td>
+                                        </tr>
+                                        <tr class="total">
+                                            <td>TOTAL</td>
+                                            <td>{{quotationForm.value.grandTotal| currency:'AED':'symbol'}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Note</mat-label>
+                                    <textarea matInput placeholder="Note" name="note" formControlName="note" rows="5">
+                                    </textarea>
+                                </mat-form-field>
+                            </div>
+
+                        </mat-tab>
+                        <mat-tab label="Customer Info">
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Choose Customer</mat-label>
+                                    <mat-select formControlName="customer_id" required>
+                                        <mat-option *ngFor="let customer of customers" [value]="customer.id">
+                                            {{customer.name}} ({{customer.phone_number}})
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+
+                </form>
+
+            </div>
+            <!-- / CONTENT -->
+
+        </div>
+        <!-- / CONTENT CARD -->
+
+    </div>
+    <!-- / CENTER -->
+
+</div>

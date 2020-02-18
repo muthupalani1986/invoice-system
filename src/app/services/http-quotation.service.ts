@@ -29,9 +29,9 @@ export class HttpQuotationService {
     const url = this.apiBaseUrl + '/quotation/' + id;
     return this._http.post<GetQuotationResponse>(url, {}, this.requestheader());
   }
-  public getAllQuotations(): Observable<GetAllQuotationRes> {
+  public getAllQuotations(type:string='quotation'): Observable<GetAllQuotationRes> {
     const url = this.apiBaseUrl + '/quotation';
-    return this._http.post<GetAllQuotationRes>(url, {}, this.requestheader());
+    return this._http.post<GetAllQuotationRes>(url, {type:type}, this.requestheader());
   }
   public deleteQuotation(payLodData: Quotation): Observable<NewQuotationResponse> {
     const url = this.apiBaseUrl + '/quotation/delete';

@@ -7,14 +7,14 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { FuseDirectivesModule } from '@fuse/directives/directives';
 import { FusePipesModule } from '@fuse/pipes/pipes.module';
 
+
 @NgModule({
+    
     imports  : [
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
-
         FlexLayoutModule,
-
         FuseDirectivesModule,
         FusePipesModule
     ],
@@ -22,9 +22,7 @@ import { FusePipesModule } from '@fuse/pipes/pipes.module';
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
-
         FlexLayoutModule,
-
         FuseDirectivesModule,
         FusePipesModule
     ]

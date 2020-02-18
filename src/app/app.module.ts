@@ -45,7 +45,7 @@ const appRoutes: Routes = [
         canLoad: [AuthGuard]
     },
     {
-        path: 'sales',
+        path: 'manageSales',
         loadChildren: () => import('./main/sales/sales.module').then(mod => mod.SalesModule),
         canLoad: [AuthGuard]
     },

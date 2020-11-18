@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit, ViewEncapsulation, ViewChild, ElementRef } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 import { Location } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Subject, fromEvent } from 'rxjs';
-import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Subject, fromEvent, Observable } from 'rxjs';
+import { takeUntil, debounceTime, distinctUntilChanged, startWith, map } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseUtils } from '@fuse/utils';
 import { Product } from 'app/main/product/add-product/product.model';
@@ -28,6 +28,8 @@ import { HttpProductService } from '../../../services/http-product.service';
   animations: fuseAnimations
 })
 export class AddQuotationComponent implements OnInit, OnDestroy {
+  autoCompleteCtrl = new FormControl();
+  filteredProducts: Observable<ProductDetails[]>;
   quotation: Quotation;
   pageType: string;
   quotationForm: FormGroup;
@@ -96,43 +98,41 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
     this._httpProductService.getAllProducts(true)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(products => {
-        this.products = _.get(products, 'products', []);        
+        this.products = _.get(products, 'products', []);
       });
 
-    fromEvent(this.filter.nativeElement, 'keyup')
-      .pipe(
-        takeUntil(this._unsubscribeAll),
-        debounceTime(150),
-        distinctUntilChanged()
-      )
-      .subscribe(() => {
-        if (!this.products) {
-          return;
-        }
-        const prodCode = this.filter.nativeElement.value ? this.filter.nativeElement.value.toUpperCase() : '';
-        const productDetails: ProductDetails = _.find(this.products, { code: prodCode }) as ProductDetails;
-
-        let orderIndex: number;
-        if (productDetails) {
-          productDetails.unit_price=productDetails.sellingPrice;
-          const productId = +(productDetails.id);
-          orderIndex = _.findIndex(this.ordersArray.value, { product_id: productDetails.id });
-        }
-        if (productDetails && orderIndex == -1) {
-          productDetails.quantity = 1;
-          this.placeOrder(productDetails);
-          this.filter.nativeElement.value = '';
-        }
-        if (productDetails && orderIndex !== -1) {
-          productDetails.quantity = +(this.ordersArray.value[orderIndex].quantity + 1);
-          this.ordersArray.at(orderIndex).patchValue(productDetails);
-          this.filter.nativeElement.value = '';
-        }
-        this.dataSource = this.ordersArray.value;
-        this.updateOrderSummary();
-      });
+    this.filteredProducts = this.autoCompleteCtrl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value))
+    );
   }
 
+  private _filter(value: string): ProductDetails[] {
+    const filterValue = value.toLowerCase();
+    const productDetails = _.filter(this.products, (prod) => {
+      return prod.name.toLowerCase().indexOf(filterValue) !== -1 || prod.code.toLowerCase().indexOf(filterValue) !== -1
+    });
+    return productDetails;
+  }
+  getPosts(productCode: string) {
+    let orderIndex: number;
+    const productDetails = _.find(this.products, { code: productCode });
+    if (productDetails) {
+      productDetails.unit_price = productDetails.sellingPrice;
+      const productId = +(productDetails.id);
+      orderIndex = _.findIndex(this.ordersArray.value, { product_id: productDetails.id });
+    }
+    if (productDetails && orderIndex == -1) {
+      productDetails.quantity = 1;
+      this.placeOrder(productDetails);
+    }
+    if (productDetails && orderIndex !== -1) {
+      productDetails.quantity = +(this.ordersArray.value[orderIndex].quantity + 1);
+      this.ordersArray.at(orderIndex).patchValue(productDetails);
+    }
+    this.dataSource = this.ordersArray.value;
+    this.updateOrderSummary();
+  }
   /**
    * On destroy
    */
@@ -245,7 +245,7 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
    * @param index 
    * @description: Delete order
    */
-  deleteOrder(index: number): void {    
+  deleteOrder(index: number): void {
     this.ordersArray.removeAt(index);
     this.quotationForm.markAsDirty();
     this.dataSource = this.ordersArray.value;
@@ -255,7 +255,7 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
    * Save Quotation
    */
   saveQuotation(): void {
-    const data = this.quotationForm.getRawValue();        
+    const data = this.quotationForm.getRawValue();
     const requestPayload: Quotation = {
       ...data
     };
@@ -275,7 +275,7 @@ export class AddQuotationComponent implements OnInit, OnDestroy {
    * Add Quotation
    */
   addQuotation(): void {
-    const data = this.quotationForm.getRawValue();    
+    const data = this.quotationForm.getRawValue();
     const requestPayload: Quotation = {
       ...data
     };

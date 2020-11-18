@@ -31,12 +31,13 @@
             </div>
             <!-- / APP TITLE -->
 
-            <button mat-raised-button class="save-product-button" [disabled]="quotationForm.invalid|| dataSource.length===0" *ngIf="pageType ==='new'" (click)="addQuotation()">
+            <button mat-raised-button class="save-product-button" [disabled]="quotationForm.invalid|| dataSource.length===0" *ngIf="pageType ==='new'"
+                (click)="addQuotation()">
                 <span>ADD</span>
             </button>
 
-            <button mat-raised-button class="save-product-button" [disabled]="quotationForm.invalid || quotationForm.pristine || dataSource.length===0" *ngIf="pageType ==='edit'"
-                (click)="saveQuotation()">
+            <button mat-raised-button class="save-product-button" [disabled]="quotationForm.invalid || quotationForm.pristine || dataSource.length===0"
+                *ngIf="pageType ==='edit'" (click)="saveQuotation()">
                 <span>SAVE</span>
             </button>
         </div>
@@ -56,7 +57,13 @@
                             <div class="tab-content p-24" fusePerfectScrollbar>
                                 <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
                                     <mat-label>Select Product</mat-label>
-                                    <input matInput placeholder="Please type product code" #filter>
+                                    <input type="text" placeholder="Please type product code or name" aria-label="Product code or name" matInput [formControl]="autoCompleteCtrl"
+                                        [matAutocomplete]="auto">
+                                    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)='getPosts($event.option.value)'>
+                                        <mat-option *ngFor="let option of filteredProducts | async" [value]="option.code">
+                                            {{option.name}} ({{option.code}})
+                                        </mat-option>
+                                    </mat-autocomplete>
                                 </mat-form-field>
 
                                 <mat-table class="products-table" #table [dataSource]="dataSource" matSort [@animateStagger]="{value:'50'}" formArrayName="orders">

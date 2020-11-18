@@ -20,6 +20,8 @@ import { FuseSharedModule } from '@fuse/shared.module';
 import { FuseWidgetModule } from '@fuse/components/widget/widget.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+
 @NgModule({
     imports: [CommonModule, FormsModule, CommonModule,
         CommonModule,
@@ -39,7 +41,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         MatDialogModule,
         ReactiveFormsModule,
         MatTooltipModule,
-        FuseWidgetModule],
+        FuseWidgetModule,
+        MatAutocompleteModule],
     declarations: [DeleteConfirmationDialogComponent],
     exports: [CommonModule, FormsModule, MatButtonModule,
         CommonModule,
@@ -59,6 +62,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         MatDialogModule,
         ReactiveFormsModule,
         MatTooltipModule,
-        FuseWidgetModule]
+        FuseWidgetModule,
+        MatAutocompleteModule]
 })
 export class SharedModule { }
